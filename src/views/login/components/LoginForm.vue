@@ -1,7 +1,7 @@
 <template>
   <div class="login-title">
     <img class="icon" src="@/assets/image/logo.png" alt="logo" />
-    <h2 class="title">Vue-Admin-Perfect</h2>
+    <h2 class="title">智能合约安全检测系统</h2>
   </div>
   <el-form
       ref="ruleFormRef"
