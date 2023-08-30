@@ -1,5 +1,5 @@
 <template>
-  <textarea ref="codeEditor" placeholder="请输入..." ></textarea>
+  <textarea ref="codeEditor" :value="modelValue" @input="updateCode" placeholder="请输入..." ></textarea>
 </template>
 
 <script>
@@ -47,6 +47,12 @@ export default defineComponent({
     readOnly: {
       type: Boolean,
       default: false
+    }
+  },
+  emits: ['update:modelValue'],
+  methods: {
+    updateCode(event) {
+      this.$emit('update:modelValue', event.target.value); // 发射带有更新值的事件
     }
   },
   setup(props, context) {

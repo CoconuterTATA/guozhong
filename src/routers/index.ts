@@ -16,12 +16,14 @@ import othersRouter from './modules/other'
 import externalLink from './modules/externalLink'
 import formRouter from './modules/form'
 import functionPageRouter from './modules/functionPage'
+import contractRouter from './modules/contractcheck';
 
 
 // 异步组件
 export const asyncRoutes = [
     ...dataScreenRouter,
     ...echartsRouter,
+    ...contractRouter,
     ...tableRouter,
     ...formRouter,
     ...othersRouter,
