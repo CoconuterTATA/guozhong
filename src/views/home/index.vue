@@ -105,6 +105,50 @@
               </div>
             </el-card>
           </el-col>
+          <el-col :xs="24" :sm="12" :lg="8">
+            <el-card style="margin-bottom: 10px">
+              <div class="grid-content">
+                <div class="left" style="background: #FF00FF"
+                ><el-icon style="font-size: 24px; color: white"><user /></el-icon
+                ></div>
+                <div class="right">
+                  <div
+                      class="h2"
+                      style="color: #FF00FF"
+                  ><count-to
+                      :start-val="0"
+                      :end-val="1587"
+                      :duration="2000"
+                      :autoplay="true"
+                  ></count-to
+                  ></div>
+                  <div>提醒 </div>
+                </div>
+              </div>
+            </el-card>
+          </el-col>
+          <el-col :xs="24" :sm="12" :lg="8">
+            <el-card style="margin-bottom: 10px">
+              <div class="grid-content">
+                <div class="left" style="background: #4B0082"
+                ><el-icon style="font-size: 24px; color: white"><user /></el-icon
+                ></div>
+                <div class="right">
+                  <div
+                      class="h2"
+                      style="color: #4B0082"
+                  ><count-to
+                      :start-val="0"
+                      :end-val="2324"
+                      :duration="2000"
+                      :autoplay="true"
+                  ></count-to
+                  ></div>
+                  <div>优化 </div>
+                </div>
+              </div>
+            </el-card>
+          </el-col>
         </el-row>
         <el-card class="box-card">
           <template #header>
