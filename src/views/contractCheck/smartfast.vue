@@ -23,8 +23,9 @@
             </div>
           </el-card>
 
-            <pieChart/>
-            <!-- 这里是数据展示区域，你可以根据需要添加内容 -->
+          <div class="app-container">
+    <div ref="chartsRef" class="app-echarts"></div>
+        </div>
 
         </div>
       </div>
@@ -34,27 +35,152 @@
   </template>
   
   <script lang="ts" setup>
-  import { ref } from 'vue';
+  // import { ref } from 'vue';
   import CodeMirror from '@/components/CodeMirror/index.vue';
-  import pieChart from '@/views/echarts/pieEcharts/index.vue';
+  import {ref,onMounted} from "vue";
+  import {useResizeElement} from '@/hooks/useResizeElement'
+  import * as echarts from 'echarts'
   import axios from 'axios';
   const selectedVersion = ref('');
   const codeValue = ref('');
   const solidityVersions = ['0.8.7', '0.7.6', '0.6.12']; // 示例Solidity版本列表
-  const downloadLink = ref(''); // 初始化为空
+  const downloadLink = "http://42.194.184.32:5055/report.pdf"; // 初始化为空
   const downloadLinkText = ref('检测结果下载链接');
   
+  const chartsRef = ref<HTMLElement | null>()
+
+const backgroundColor = '#101736';
+const title = {
+  text: '检测结果',
+  textStyle: {
+    // color: '#fff',
+    fontSize: 16,
+  },
+  padding: 0,
+  top: 35,
+  left: 'center',
+};
+const legend = {
+  //data，就是取得每个series里面的name属性。
+  orient: 'vertical',
+  icon: 'circle', //图例形状
+  padding: 0,
+  bottom: 'center',
+  right: 30,
+  itemWidth: 14, //小圆点宽度
+  itemHeight: 14, // 小圆点高度
+  itemGap: 21, // 图例每项之间的间隔。[ default: 10 ]横向布局时为水平间隔，纵向布局时为纵向间隔。
+  textStyle: {
+    fontSize: 14,
+    // color: '#ffffff',
+  },
+};
+const tooltip = {
+  show: true,
+  formatter: '{b}:{d}%',
+};
+const color = ['#03acd1', '#04cab7', '#03c781', '#fce348', '#fc2d8a'];
+let options = {
+  // backgroundColor,
+  color,
+  title,
+  tooltip,
+  legend,
+
+  series: [
+    {
+      name: '合约检测结果',
+      type: 'pie',
+      center: ['50%', '50%'], //圆心的位置
+      top: '2%', //单单指的饼图距离上面的距离，top越大饼图越小
+      left: '0%', //单单指的饼图距离左面的距离，会改变饼图的大小
+      radius: ['0%', '70%'], //环形图的本质就在这里 [内半径!=0，外半径] 外半径越大，圆越大
+      avoidLabelOverlap: false, //做同心圆用到
+      clockwise:false, //顺时针排列
+      startAngle: 160, //起始角度 影响不大
+      roseType:"area", //area|radius
+
+      label: {
+        show: true, //false不显示饼图上的标签
+        position: 'outside', //inside（在饼图上显示）,outside(默认就会出现引导线) center
+        formatter: '{b}:{c}',
+      },
+
+
+      //只有设置了label:show=ture;position=outside 设置labelLine才会有效
+      labelLine: {
+        show: true, //显示引导线
+        length: 30, //连接饼图第1段线条的长度 length length2 不写自适应
+        length2: 10, //链接饼图第2段线条长度
+        smooth: true, //是否光滑连接线
+      },
+      itemStyle: {
+        //每个扇形的设置
+        borderColor: 'rgba(0,0,0,.1)', //扇形边框颜色
+        borderWidth: 0, //扇形边框大小 要先给borderColor颜色 设置borderWidth才会有效果
+
+      },
+      data: [
+        { value: 735, name: '提醒' },
+        { value: 580, name: '优化' },
+        { value: 484, name: '高风险漏洞' },
+        { value: 300, name: ' 低风险漏洞' },
+        { value: 600, name: ' 中风险漏洞' },
+      ].sort((a, b) => b.value - a.value), //数组从大到小排序
+
+      emphasis: {
+        scale: true,
+        scaleSize: 10,
+
+        //启用鼠标放上去放大效果，这个挺好的
+        itemStyle: {
+          shadowBlur: 10,
+          shadowOffsetX: 0,
+          shadowColor: 'rgba(0, 0, 0, 0.5)',
+        },
+      },
+    },
+  ],
+};
+
+onMounted(() => {
+  let chart = echarts.init(chartsRef.value)
+  chart.setOption(options)
+  let {addObserver} = useResizeElement(chart,chartsRef.value)
+  addObserver()
+})
+
   const submitCode = async () => {
   try {
     const formData = new FormData();
     formData.append('code', codeValue.value);
     formData.append('solcVersion', selectedVersion.value);
 
-    const response = await axios.post('http://192.168.3.162:80/save', formData);
+    const response = await axios.post('http://42.194.184.32:8080/smartFast', formData);
+    if (response.data) {
+        console.log('high:', response.data.high);
+        console.log('opt:', response.data.opt);
+        console.log('low:', response.data.low);
+        console.log('medium:', response.data.medium);
+        console.log('need attention:', response.data["need attention"]);
+
+        options.series[0].data = [
+          { value: response.data["need attention"], name: '提醒' },
+          { value: response.data.opt, name: '优化' },
+          { value: response.data.high, name: '高风险漏洞' },
+          { value: response.data.low, name: '低风险漏洞' },
+          { value: response.data.medium, name: '中风险漏洞' }
+        ].sort((a, b) => b.value - a.value); // 从大到小排序
+
+        // 使用setOption方法更新图表
+        let chart = echarts.init(chartsRef.value);
+        chart.setOption(options);
+    }
+
     console.log('传输成功')
     console.log(formData)
     // 从后端返回的响应中获取下载链接
-    downloadLink.value = response.data.downloadLink;
+  
   } catch (error) {
     console.error('Error submitting code:', error);
   }
@@ -62,6 +188,11 @@
   </script>
   
   <style lang="scss" scoped>
+  .app-echarts{
+  width: 100%;
+  height: 100%;
+  background: white;
+}
   .m-code-editor {
     width: 100%;
     height: 100%;
