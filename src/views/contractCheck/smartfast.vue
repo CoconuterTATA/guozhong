@@ -24,7 +24,9 @@
           </el-card>
 
           <div class="app-container">
-    <div ref="chartsRef" class="app-echarts"></div>
+            <div class="chart-wrapper">
+              <div ref="chartsRef" class="app-echarts"></div>
+          </div>
         </div>
 
         </div>
@@ -44,12 +46,16 @@
   const selectedVersion = ref('');
   const codeValue = ref('');
   const solidityVersions = ['0.8.7', '0.7.6', '0.6.12']; // 示例Solidity版本列表
-  const downloadLink = "http://42.194.184.32:5055/report.pdf"; // 初始化为空
+  const downloadLink = "http://42.194.184.32:8080/download"; // 初始化为空
   const downloadLinkText = ref('检测结果下载链接');
   
   const chartsRef = ref<HTMLElement | null>()
-
-const backgroundColor = '#101736';
+  const reminderValue = ref(0);
+  const optimizationValue = ref(0);
+  const highRiskValue = ref(0);
+  const lowRiskValue = ref(0);
+  const mediumRiskValue = ref(0);
+  const backgroundColor = '#101736';
 const title = {
   text: '检测结果',
   textStyle: {
@@ -80,6 +86,7 @@ const tooltip = {
   formatter: '{b}:{d}%',
 };
 const color = ['#03acd1', '#04cab7', '#03c781', '#fce348', '#fc2d8a'];
+const chartInstance = ref(null);
 let options = {
   // backgroundColor,
   color,
@@ -121,11 +128,11 @@ let options = {
 
       },
       data: [
-        { value: 735, name: '提醒' },
-        { value: 580, name: '优化' },
-        { value: 484, name: '高风险漏洞' },
-        { value: 300, name: ' 低风险漏洞' },
-        { value: 600, name: ' 中风险漏洞' },
+      { value: reminderValue.value, name: '提醒' },
+      { value: optimizationValue.value, name: '优化' },
+      { value: highRiskValue.value, name: '高风险漏洞' },
+      { value: lowRiskValue.value, name: '低风险漏洞' },
+      { value: mediumRiskValue.value, name: '中风险漏洞' },
       ].sort((a, b) => b.value - a.value), //数组从大到小排序
 
       emphasis: {
@@ -144,10 +151,10 @@ let options = {
 };
 
 onMounted(() => {
-  let chart = echarts.init(chartsRef.value)
-  chart.setOption(options)
-  let {addObserver} = useResizeElement(chart,chartsRef.value)
-  addObserver()
+  chartInstance.value = echarts.init(chartsRef.value);
+  chartInstance.value.setOption(options);
+  let {addObserver} = useResizeElement(chartInstance.value, chartsRef.value);
+  addObserver();
 })
 
   const submitCode = async () => {
@@ -156,7 +163,8 @@ onMounted(() => {
     formData.append('code', codeValue.value);
     formData.append('solcVersion', selectedVersion.value);
 
-    const response = await axios.post('http://42.194.184.32:8080/smartFast', formData);
+    const response = await axios.post('/api/smartFast', formData);
+
     if (response.data) {
         console.log('high:', response.data.high);
         console.log('opt:', response.data.opt);
@@ -164,6 +172,12 @@ onMounted(() => {
         console.log('medium:', response.data.medium);
         console.log('need attention:', response.data["need attention"]);
 
+        reminderValue.value = response.data["need attention"];
+        console.log(reminderValue.value)
+        optimizationValue.value = response.data.opt;
+        highRiskValue.value = response.data.high;
+        lowRiskValue.value = response.data.low;
+        mediumRiskValue.value = response.data.medium;
         options.series[0].data = [
           { value: response.data["need attention"], name: '提醒' },
           { value: response.data.opt, name: '优化' },
@@ -171,10 +185,10 @@ onMounted(() => {
           { value: response.data.low, name: '低风险漏洞' },
           { value: response.data.medium, name: '中风险漏洞' }
         ].sort((a, b) => b.value - a.value); // 从大到小排序
-
+        
         // 使用setOption方法更新图表
-        let chart = echarts.init(chartsRef.value);
-        chart.setOption(options);
+        chartInstance.value.setOption(options, true); 
+        // chart.setOption(options);
     }
 
     console.log('传输成功')
@@ -188,10 +202,16 @@ onMounted(() => {
   </script>
   
   <style lang="scss" scoped>
-  .app-echarts{
+  .chart-wrapper {
+  position: relative;
+  height: 300px;  /* 这个高度可以根据你的饼图大小调整 */
+}
+
+.app-echarts {
+  position: sticky;
+  top: 10px;  /* 距离视口顶部的距离，可以根据需要调整 */
   width: 100%;
-  height: 100%;
-  background: white;
+  height: 600px;  /* 这个高度可以根据你的饼图大小调整 */
 }
   .m-code-editor {
     width: 100%;

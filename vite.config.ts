@@ -69,12 +69,18 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
       cors: true,
       // 代理跨域（模拟示例）
       proxy: {
-        // "/api": {
-        //   target: "", // easymock
-        //   changeOrigin: true,
-        //   rewrite: path => path.replace(/^\/api/, "")
-        // }
+        "/api": {
+          target: "http://42.194.184.32:8080",  // 设置为您的后端服务器地址
+          changeOrigin: true,
+          rewrite: path => path.replace(/^\/api/, "")
+        },
+        "/download":{
+          target: "http://42.194.184.32:8080",
+          changeOrigin: true,
+          secure: false // 这个设置允许代理到无HTTPS的服务器
+        }
       }
+      
     },
     // 生产环境打包配置
     //去除 console debugger
