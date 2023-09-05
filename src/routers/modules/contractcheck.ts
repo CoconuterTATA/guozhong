@@ -13,8 +13,8 @@ const contractRouter = [{
         {
             path: '/contractCheck/smartfast',
             component: () => import('@/views/contractCheck/smartfast.vue'),
-            name: 'smartfast',
-            meta: { title: 'smartfast', keepAlive: true , icon: 'MenuIcon'}
+            name: 'SmartFast检测台',
+            meta: { title: 'SmartFast检测台', keepAlive: true , icon: 'MenuIcon'}
         },
     ]
 }]

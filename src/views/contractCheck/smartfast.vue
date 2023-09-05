@@ -3,7 +3,7 @@
       <div class="header">
         <el-card>
           <div>
-            <span>smartfast合约检测台</span>
+            <span>SmartFast合约检测台</span>
           </div>
         </el-card>
       </div>
