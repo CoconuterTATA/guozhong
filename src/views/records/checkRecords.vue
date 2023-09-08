@@ -61,6 +61,7 @@
     </div>
   </template>
   <script lang="ts" setup name="comprehensive">
+  import axios from 'axios';
   import {ref, reactive, onMounted, nextTick} from 'vue'
   import * as dayjs from 'dayjs'
   import { ElMessage, ElMessageBox } from 'element-plus'
@@ -85,36 +86,6 @@
 //       zip: 200333,
 //     })
 //   }
-  const column = [
-    { type: 'selection', width: 60 ,fixed: 'left'},
-    // { name: 'name', label: '姓名', inSearch: true, valueType: 'input', width: 80 },
-    // { name: 'age', label: '年龄', align: 'right' },
-    // {
-    //   name: 'sex',
-    //   label: '性别',
-    //   slot: true,
-    //   inSearch: true,
-    //   options: [
-    //     {
-    //       value: 1,
-    //       label: '男',
-    //     },
-    //     {
-    //       value: 0,
-    //       label: '女',
-    //     },
-    //   ],
-    //   valueType: 'select',
-    // },
-    {name: 'id', label: '编号', inSearch: true, valueType: 'input',},
-    { name: 'solcVersion', label: '合约版本', inSearch: true, valueType: 'input' },
-    { name: 'contractName', label: '合约名', inSearch: true, valueType: 'input' , width: 180},
-    { name: 'createdAt', label: '创建日期', sorter: true, inSearch: true, valueType: 'input', width: 180 },
-    // { name: 'province', label: '省份' , width: 100},
-    // { name: 'city', label: '城市' },
-    // { name: 'zip', label: '邮编' },
-    // { name: 'operation', slot: true, fixed: 'right', width: 200,label: '操作'  },
-  ]
   const list = ref(data)
   
   const formSize = ref('default')
@@ -252,10 +223,32 @@
   const getHeight = ()=>{
   
   }
-  
+  const column = [
+    { type: 'selection', width: 60 ,fixed: 'left'},
+    {name: 'id', label: '编号', inSearch: true, valueType: 'input',},
+    { name: 'solcVersion', label: '合约版本', inSearch: true, valueType: 'input' },
+    { name: 'contractName', label: '合约名', inSearch: true, valueType: 'input' , width: 180},
+    { name: 'createdAt', label: '创建日期', sorter: true, inSearch: true, valueType: 'input', width: 180 },
+  ]
+
   onMounted(() => {
     nextTick(()=>{
+        
+    const loading = ref(true);
+    const data = ref([]);
       // let data = appContainer.value.
+       // 在nextTick中获取数据，以确保在视图更新后执行
+       axios.get('http://192.168.3.162:8080/record')
+          .then(response => {
+            data.value = response.data;
+            loading.value = false; // 数据加载完成后隐藏加载动画
+            console.log(data.value)
+            list.value = response.data;
+          })
+          .catch(error => {
+            console.error('获取数据失败', error);
+            loading.value = false; // 处理错误情况，也隐藏加载动画
+          });
     })
     setTimeout(() => {
       loading.value = false
