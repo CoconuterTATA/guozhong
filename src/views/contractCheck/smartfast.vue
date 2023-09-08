@@ -45,7 +45,7 @@
   import axios from 'axios';
   const selectedVersion = ref('');
   const codeValue = ref('');
-  const solidityVersions = ['0.8.7', '0.7.6', '0.6.12']; // 示例Solidity版本列表
+  const solidityVersions = ['0.8.7', '0.7.6', '0.6.12','0.8.0']; // 示例Solidity版本列表
   const downloadLink = "http://42.194.184.32:8080/download"; // 初始化为空
   const downloadLinkText = ref('检测结果下载链接');
   
