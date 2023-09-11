@@ -21,19 +21,19 @@ import checkRecords from './modules/checkrecords'
 
 // 异步组件
 export const asyncRoutes = [
-    ...dataScreenRouter,
-    ...echartsRouter,
+    //...dataScreenRouter,
+    //...echartsRouter,
     ...contractRouter,
     ...checkRecords,
-    ...tableRouter,
+    //...tableRouter,
     // ...formRouter,
-    ...othersRouter,
-    ...functionPageRouter,
+    //...othersRouter,
+    //...functionPageRouter,
     // ...chatRouter,
-    ...nestedRouter,
+    //...nestedRouter,
     // ...excelRouter,
-    ...externalLink,
-    ...systemRouter,
+    //...externalLink,
+    //...systemRouter,
 ]
 
 /**
