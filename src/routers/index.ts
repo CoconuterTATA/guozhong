@@ -29,13 +29,13 @@ export const asyncRoutes = [
     //...tableRouter,
     // ...formRouter,
     // ...othersRouter,
-    ...dynamicCheck
+    ...dynamicCheck,
     // ...functionPageRouter,
     // ...chatRouter,
     // ...nestedRouter,
     // ...excelRouter,
     //...externalLink,
-    //...systemRouter,
+    ...systemRouter,
 ]
 
 /**

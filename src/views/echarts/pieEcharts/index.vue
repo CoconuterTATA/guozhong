@@ -40,7 +40,7 @@ const tooltip = {
   show: true,
   formatter: '{b}:{d}%',
 };
-const color = ['#03acd1', '#04cab7', '#03c781', '#fce348', '#fc2d8a'];
+const color = ['#9b59b6', '#3498db', '#ff0000', '#27ae60', '#f39c12'];
 let options = {
   // backgroundColor,
   color,

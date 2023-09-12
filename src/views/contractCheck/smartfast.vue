@@ -19,27 +19,37 @@
                 <el-option v-for="version in solidityVersions" :key="version" :label="version" :value="version" />
               </el-select>
               <el-button @click="submitCode">提交</el-button>
-              <p>检测结果下载链接：<a :href="downloadLink" download>{{ downloadLinkText }}</a></p>
+              <div v-if="isLoading" id="Loading">
+      <!-- 加载动画 -->
+      <div class="loader-inner ball-beat">
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
+              <p>检测报告下载链接：<a :href="downloadLink" download>{{ downloadLinkText }}</a></p>
             </div>
           </el-card>
-          <div class="app-container">
-            <div class="chart-wrapper" >
-              <div ref="chartsRef" class="app-echarts"></div>
-          </div>
+          <el-card>
+            <div class="app-container">
+              <div class="chart-wrapper" >
+                <div ref="chartsRef" class="app-echarts"></div>
+              </div>
+            </div>
+            <div class="result-show-text">
+              <el-card v-if="auditMessage">
+                <div v-html="auditMessage"></div>
+              </el-card>
+            </div>
+          </el-card>
         </div>
-        </div>
-      </div>
-      <div class="result-show-text">
-        <el-card v-if="auditMessage">
-          <div v-html="auditMessage"></div>
-    </el-card>
       </div>
 
       <div class="footer">
       </div>
     </div>
   </template>
-  
+
   <script lang="ts" setup>
   // import { ref } from 'vue';
   import CodeMirror from '@/components/CodeMirror/index.vue';
@@ -49,10 +59,10 @@
   import axios from 'axios';
   const selectedVersion = ref('');
   const codeValue = ref('');
-  const solidityVersions = ['0.8.7', '0.7.6', '0.6.12','0.8.0']; // 示例Solidity版本列表
+  const solidityVersions = ['0.8.0', '0.7.5', '0.7.4','0.7.3', '0.7.2', '0.7.1', '0.7.0', '0.5.0', '0.4.24']; // 示例Solidity版本列表
   const downloadLink = "http://42.194.184.32:8080/download"; // 初始化为空
   const downloadLinkText = ref('检测结果下载链接');
-  
+
   const chartsRef = ref<HTMLElement | null>()
   const reminderValue = ref(0);
   const optimizationValue = ref(0);
@@ -61,7 +71,7 @@
   const mediumRiskValue = ref(0);
   const backgroundColor = '#101736';
   const auditMessage = ref('');
-
+  const isLoading = ref(false);
 const title = {
   text: '检测结果',
   textStyle: {
@@ -91,7 +101,7 @@ const tooltip = {
   show: true,
   formatter: '{b}:{d}%',
 };
-const color = ['#03acd1', '#04cab7', '#03c781', '#fce348', '#fc2d8a'];
+const color = ['#9b59b6', '#3498db', '#ff0000', '#27ae60', '#f39c12'];
 const chartInstance = ref(null);
 let options = {
   // backgroundColor,
@@ -165,6 +175,7 @@ onMounted(() => {
 
   const submitCode = async () => {
   try {
+    isLoading.value = true; 
     const formData = new FormData();
     formData.append('code', codeValue.value);
     formData.append('solcVersion', selectedVersion.value);
@@ -185,14 +196,24 @@ onMounted(() => {
         lowRiskValue.value = response.data.low;
         mediumRiskValue.value = response.data.medium;
         auditMessage.value = `
-<div class="result-title">本次审计结果:</div>
-<div class="result-section">审计合约名: <strong>${response.data.ContractName}</strong></div>
-<div class="result-section">审计合约版本: <strong>${response.data.ContractVersion}</strong></div>
-<div class="result-section">审计报告文件名: <strong>${response.data.ContractReport}</strong></div>
-<div class="result-section">审计结果: 存在高风险漏洞<strong>${ response.data.high}</strong>个</div>
-<div class="result-section">时间耗时: ${response.data.ExecutedTime} 审计时间: ${response.data.AuditTime}</div>
-<div>经smartfast智能合约审计工具发现，该智能合约安全有<strong>${response.data.high}</strong>个高风险漏洞，<strong>${response.data.medium}</strong>个中风险漏洞，<strong>${response.data.low}</strong>个低风险漏洞，<strong>${response.data["need attention"]}</strong>个地方需要注意以及<strong>${response.data.opt}</strong>个地方需要优化，详细合约审计结果可通过点击检查结果下载链接下载。</div>
-`;
+            <div class="result-section">
+                <h1>审计结果</h1>
+                <p>审计合约名: <strong>${response.data.ContractName}</strong></p>
+                <p>审计合约版本: <strong>${response.data.ContractVersion}</strong></p>
+                <p>审计报告文件名: <strong>${response.data.ContractReport}</strong></p>
+                <p>经smartfast智能合约审计工具发现，该智能合约安全存在
+                <span style="color: #ff0000; font-weight: bold; font-size: 20px;">${response.data.high}个高风险漏洞</span>，
+                <span style="color: #f39c12; font-weight: bold; font-size: 20px;">${response.data.medium}个中风险漏洞</span>，
+                <span style="color: #27ae60; font-weight: bold; font-size: 20px;">${response.data.low}个低风险漏洞</span>，
+                <span style="color: #9b59b6; font-weight: bold; font-size: 20px;">${response.data["need attention"]}个地方需要注意</span>以及
+                <span style="color: #3498db; font-weight: bold; font-size: 20px;">${response.data.opt}个地方需要优化</span>，
+                详细合约审计结果可通过见检查结果下载链接。</p>
+                <p style="margin-top: 20px; display: flex; justify-content: space-between;">
+                        <span>检测耗时: ${response.data.ExecutedTime}</span>
+                        <span style="color: #7F7F7F">审计时间: ${response.data.AuditTime}</span>
+                </p>
+            </div>
+          `;
 
 
         options.series[0].data = [
@@ -202,79 +223,139 @@ onMounted(() => {
           { value: response.data.low, name: '低风险漏洞' },
           { value: response.data.medium, name: '中风险漏洞' }
         ].sort((a, b) => b.value - a.value); // 从大到小排序
-        
+
         // 使用setOption方法更新图表
-        chartInstance.value.setOption(options, true); 
+        chartInstance.value.setOption(options, true);
         // chart.setOption(options);
     }
 
     console.log('传输成功')
     console.log(formData)
     // 从后端返回的响应中获取下载链接
-  
+
   } catch (error) {
     console.error('Error submitting code:', error);
   }
+  isLoading.value = false;  // 隐藏加载动画
 };
   </script>
-  
+
   <style lang="scss" scoped>
   .chart-wrapper {
   position: relative;
   bottom: 100px;  /* 这个高度可以根据你的饼图大小调整 */
 }
 
-
-.result-title {
-    font-weight: bold;
-    font-size: 16px;
-    margin-bottom: 8px;
+#Loading {
+  top:50%;
+  left:50%;
+  position: absolute;
+  -webkit-transform: translateY(-50%)  translateX(-50%);
+  transform: translateY(-50%)  translateX(-50%);
+  z-index:100;
 }
+@-webkit-keyframes ball-beat {
+  50% {
+    opacity: 0.2;
+    -webkit-transform: scale(0.75);
+    transform: scale(0.75);
+  }
+
+  100% {
+    opacity: 1;
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+}
+
+@keyframes ball-beat {
+  50% {
+    opacity: 0.2;
+    -webkit-transform: scale(0.75);
+    transform: scale(0.75);
+  }
+
+  100% {
+    opacity: 1;
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+}
+
+.ball-beat > div {
+  background-color: #279fcf;
+  width: 30px;   /* 增大了宽度 */
+  height: 30px;  /* 增大了高度 */
+  border-radius: 100% !important;
+  margin: 4px;   /* 增大了间隔 */
+  -webkit-animation-fill-mode: both;
+  animation-fill-mode: both;
+  display: inline-block;
+  -webkit-animation: ball-beat 0.7s 0s infinite linear;
+  animation: ball-beat 0.7s 0s infinite linear;
+}
+
+.ball-beat > div:nth-child(2n-1) {
+  -webkit-animation-delay: 0.35s !important;
+  animation-delay: 0.35s !important;
+}
+
 
 .result-section {
-    margin-bottom: 10px;
+  h1 {
+    color: #333; /* 文字颜色 */
+    font-size: 28px; /* 字体大小 */
+    margin-bottom: 20px; /* 底部外边距 */
+    text-align: center; /* 文字居中对齐 */
+  }
+  /* 设置段落的样式 */
+  p {
+    color: #666; /* 文字颜色 */
+    font-size: 16px; /* 字体大小 */
+    margin-bottom: 10px; /* 底部外边距 */
+  }
 }
-.result-show-text {
-  font-size: 14px;
-  line-height: 1.6;
-  position: relative; 
-  width: 50%; 
+
+
+  .result-show-text {
+  position: relative;
+  width: 100%;
   bottom: 0px;
-  left: 25%; 
-  transform: translateX(-50%); 
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: -200px;
 }
 
 .app-echarts {
   position: sticky;
   top: 10px;  /* 距离视口顶部的距离，可以根据需要调整 */
   width: 100%;
-  height: 600px;  /* 这个高度可以根据你的饼图大小调整 */
+  height: 800px;  /* 这个高度可以根据你的饼图大小调整 */
 }
   .m-code-editor {
     width: 100%;
     height: 100%;
     display: flex;
     flex-direction: column;
-  
+
     & .header {
       flex-shrink: 0;
     }
-  
+
     & .content {
       display: flex;
       flex-grow: 1;
     }
-  
+
     & .editor-container,
     & .options-container {
       flex: 1;
       padding: 10px;
       box-sizing: border-box;
     }
-  
+
     & .footer {
       flex-shrink: 0;
     }
   }
   </style>
-  

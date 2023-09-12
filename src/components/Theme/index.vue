@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="m-setting-fix">
-      <div class="item">
-        <div class="item-child" @click="operator(1)">
+      <!-- <div class="item"> -->
+        <!-- <div class="item-child" @click="operator(1)">
           <el-icon size="30" color="#3698fd" style="margin-bottom: 8px"><brush /></el-icon>
           主题配置
         </div>
@@ -10,7 +10,7 @@
           <el-icon size="30" color="#3698fd" style="margin-bottom: 8px"><Link /></el-icon>
           源码拷贝
         </div>
-      </div>
+      </div> -->
     </div>
     <el-drawer
         v-model="drawer" title="主题配置" size="300px">
