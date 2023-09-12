@@ -7,6 +7,9 @@
             <template v-if="item.valueType === 'input'">
               <el-input v-model="formInline[item.name]" :placeholder="`请输入${item.label}`" />
             </template>
+            <template v-if="item.valueType === 'link'">
+              <a :href="formInline[item.name]" target="_blank">{{ item.label }}</a>
+            </template>
             <template v-if="item.valueType === 'select'">
               <el-select
                 style="width: 100%"
@@ -42,39 +45,54 @@
         <slot name="btn"></slot>
       </div>
       <!-- ------------表格--------------->
-      <div class="table">
-        <el-table
-          class="zb-table"
-          v-loading="loading"
-          @selection-change="(val) => emit('selection-change', val)"
-          :data="list"
-          :border="true"
-        >
-          <template v-for="item in columns">
-            <el-table-column
-              v-if="item.type"
-              :type="item.type"
-              :width="item.width"
-              :align="item.align != null ? item.align : 'center'"
-              :fixed="item.fixed"
-              :label="item.label"
-            />
-            <el-table-column
-              v-else
-              :prop="item.name"
-              :width="item.width"
-              :align="item.align != null ? item.align : 'center'"
-              :fixed="item.fixed"
-              :label="item.label"
-            >
-              <template #default="scope">
-                <span v-if="!item.slot">{{ scope.row[item.name] }}</span>
-                <slot v-else :name="item.name" :item="item" :row="scope.row"></slot>
-              </template>
-            </el-table-column>
-          </template>
-        </el-table>
-      </div>
+      <!-- ------------表格--------------->
+<div class="table">
+  <el-table
+    class="zb-table"
+    v-loading="loading"
+    @selection-change="(val) => emit('selection-change', val)"
+    :data="list"
+    :border="true"
+  >
+    <template v-for="item in columns">
+      <el-table-column
+        v-if="item.type === 'link'"
+        :prop="item.name"
+        :width="item.width"
+        :align="item.align != null ? item.align : 'center'"
+        :fixed="item.fixed"
+        :label="item.label"
+      >
+        <template #default="scope">
+          <a :href="scope.row[item.name]">{{ scope.row[item.name] }}</a>
+        </template>
+      </el-table-column>
+      <el-table-column
+        v-else-if="item.type"
+        :type="item.type"
+        :width="item.width"
+        :align="item.align != null ? item.align : 'center'"
+        :fixed="item.fixed"
+        :label="item.label"
+      />
+      <el-table-column
+        v-else
+        :prop="item.name"
+        :width="item.width"
+        :align="item.align != null ? item.align : 'center'"
+        :fixed="item.fixed"
+        :label="item.label"
+      >
+        <template #default="scope">
+          <span v-if="!item.slot">{{ scope.row[item.name] }}</span>
+          <slot v-else :name="item.name" :item="item" :row="scope.row"></slot>
+          
+        </template>
+      </el-table-column>
+    </template>
+  </el-table>
+</div>
+
       <!-- ------------分页--------------->
       <div class="pagination">
         <el-pagination

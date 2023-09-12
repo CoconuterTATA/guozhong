@@ -18,19 +18,21 @@ import externalLink from './modules/externalLink'
 import functionPageRouter from './modules/functionPage'
 import contractRouter from './modules/contractcheck';
 import checkRecords from './modules/checkrecords'
+import dynamicCheck from './modules/dynamicCheck';
 
 // 异步组件
 export const asyncRoutes = [
     //...dataScreenRouter,
-    //...echartsRouter,
+    // ...echartsRouter,
     ...contractRouter,
-    ...checkRecords,
+    // ...checkRecords,
     //...tableRouter,
     // ...formRouter,
-    //...othersRouter,
-    //...functionPageRouter,
+    // ...othersRouter,
+    ...dynamicCheck
+    // ...functionPageRouter,
     // ...chatRouter,
-    //...nestedRouter,
+    // ...nestedRouter,
     // ...excelRouter,
     //...externalLink,
     //...systemRouter,

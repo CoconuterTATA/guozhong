@@ -22,15 +22,19 @@
               <p>检测结果下载链接：<a :href="downloadLink" download>{{ downloadLinkText }}</a></p>
             </div>
           </el-card>
-
           <div class="app-container">
-            <div class="chart-wrapper">
+            <div class="chart-wrapper" >
               <div ref="chartsRef" class="app-echarts"></div>
           </div>
         </div>
-
         </div>
       </div>
+      <div class="result-show-text">
+        <el-card v-if="auditMessage">
+          <div v-html="auditMessage"></div>
+    </el-card>
+      </div>
+
       <div class="footer">
       </div>
     </div>
@@ -56,14 +60,16 @@
   const lowRiskValue = ref(0);
   const mediumRiskValue = ref(0);
   const backgroundColor = '#101736';
+  const auditMessage = ref('');
+
 const title = {
   text: '检测结果',
   textStyle: {
     // color: '#fff',
     fontSize: 16,
   },
-  padding: 0,
-  top: 35,
+  padding: 100,
+  top: 5,
   left: 'center',
 };
 const legend = {
@@ -72,10 +78,10 @@ const legend = {
   icon: 'circle', //图例形状
   padding: 0,
   bottom: 'center',
-  right: 30,
-  itemWidth: 14, //小圆点宽度
-  itemHeight: 14, // 小圆点高度
-  itemGap: 21, // 图例每项之间的间隔。[ default: 10 ]横向布局时为水平间隔，纵向布局时为纵向间隔。
+  right: 0,
+  itemWidth: 20, //小圆点宽度
+  itemHeight: 10, // 小圆点高度
+  itemGap: 10, // 图例每项之间的间隔。[ default: 10 ]横向布局时为水平间隔，纵向布局时为纵向间隔。
   textStyle: {
     fontSize: 14,
     // color: '#ffffff',
@@ -101,7 +107,7 @@ let options = {
       center: ['50%', '50%'], //圆心的位置
       top: '2%', //单单指的饼图距离上面的距离，top越大饼图越小
       left: '0%', //单单指的饼图距离左面的距离，会改变饼图的大小
-      radius: ['0%', '70%'], //环形图的本质就在这里 [内半径!=0，外半径] 外半径越大，圆越大
+      radius: ['0%', '60%'], //环形图的本质就在这里 [内半径!=0，外半径] 外半径越大，圆越大
       avoidLabelOverlap: false, //做同心圆用到
       clockwise:false, //顺时针排列
       startAngle: 160, //起始角度 影响不大
@@ -117,7 +123,7 @@ let options = {
       //只有设置了label:show=ture;position=outside 设置labelLine才会有效
       labelLine: {
         show: true, //显示引导线
-        length: 30, //连接饼图第1段线条的长度 length length2 不写自适应
+        length: 10, //连接饼图第1段线条的长度 length length2 不写自适应
         length2: 10, //链接饼图第2段线条长度
         smooth: true, //是否光滑连接线
       },
@@ -178,6 +184,17 @@ onMounted(() => {
         highRiskValue.value = response.data.high;
         lowRiskValue.value = response.data.low;
         mediumRiskValue.value = response.data.medium;
+        auditMessage.value = `
+<div class="result-title">本次审计结果:</div>
+<div class="result-section">审计合约名: <strong>${response.data.ContractName}</strong></div>
+<div class="result-section">审计合约版本: <strong>${response.data.ContractVersion}</strong></div>
+<div class="result-section">审计报告文件名: <strong>${response.data.ContractReport}</strong></div>
+<div class="result-section">审计结果: 存在高风险漏洞<strong>${ response.data.high}</strong>个</div>
+<div class="result-section">时间耗时: ${response.data.ExecutedTime} 审计时间: ${response.data.AuditTime}</div>
+<div>经smartfast智能合约审计工具发现，该智能合约安全有<strong>${response.data.high}</strong>个高风险漏洞，<strong>${response.data.medium}</strong>个中风险漏洞，<strong>${response.data.low}</strong>个低风险漏洞，<strong>${response.data["need attention"]}</strong>个地方需要注意以及<strong>${response.data.opt}</strong>个地方需要优化，详细合约审计结果可通过点击检查结果下载链接下载。</div>
+`;
+
+
         options.series[0].data = [
           { value: response.data["need attention"], name: '提醒' },
           { value: response.data.opt, name: '优化' },
@@ -204,7 +221,27 @@ onMounted(() => {
   <style lang="scss" scoped>
   .chart-wrapper {
   position: relative;
-  height: 300px;  /* 这个高度可以根据你的饼图大小调整 */
+  bottom: 100px;  /* 这个高度可以根据你的饼图大小调整 */
+}
+
+
+.result-title {
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.result-section {
+    margin-bottom: 10px;
+}
+.result-show-text {
+  font-size: 14px;
+  line-height: 1.6;
+  position: relative; 
+  width: 50%; 
+  bottom: 0px;
+  left: 25%; 
+  transform: translateX(-50%); 
 }
 
 .app-echarts {
