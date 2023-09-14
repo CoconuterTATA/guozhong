@@ -10,59 +10,17 @@
       >
         <template v-slot:btn>
           <div style="display: flex; justify-content: flex-end">
-            <el-button type="primary" @click="add"
-            ><el-icon><plus /></el-icon> 添加</el-button
-            >
-            <el-button type="danger" @click="batchDelete"
-            ><el-icon><delete /></el-icon>删除</el-button
-            >
+           
           </div>
         </template>
         <template v-slot:sex="scope">{{ scope.row.sex ? '男' : '女' }}</template>
         <template v-slot:operation="scope">
-          <el-button type="primary" size="small" icon="Edit" @click="edit(scope.row)">
-            编辑
-          </el-button>
-          <el-button @click="del(scope.row)" type="danger" size="small" icon="Delete">
-            删除
-          </el-button>
         </template>
         <template v-slot:reportLink="scope">
           {{ scope.row.reportLink }}
     <a :href="scope.row.reportLink" target="_blank">查看报告</a>
 </template>
-
       </PropTable>
-  
-      <el-dialog v-model="dialogVisible" :title="title" width="50%">
-        <el-form
-            ref="ruleFormRef"
-            :model="ruleForm"
-            :rules="rules"
-            label-width="120px"
-            class="demo-ruleForm"
-            :size="formSize"
-        >
-          <el-form-item label="活动名称" prop="name">
-            <el-input v-model="ruleForm.name" />
-          </el-form-item>
-          <el-form-item label="性别" prop="sex">
-            <el-radio-group v-model="ruleForm.sex">
-              <el-radio :label="1">男</el-radio>
-              <el-radio :label="0">女</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item label="价格" prop="price">
-            <el-input v-model="ruleForm.price" />
-          </el-form-item>
-        </el-form>
-        <template #footer>
-            <span class="dialog-footer">
-              <el-button @click="dialogVisible = false">取消</el-button>
-              <el-button type="primary" @click="handleClose(ruleFormRef)">确定</el-button>
-            </span>
-        </template>
-      </el-dialog>
     </div>
   </template>
   <script lang="ts" setup name="comprehensive">
@@ -71,10 +29,17 @@
   import * as dayjs from 'dayjs'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import type { FormInstance } from 'element-plus'
+  const queryForm = reactive({
+    id: null,
+    solcVersion: null,
+  })
+
   const loading = ref(true)
   const appContainer = ref(null)
   import PropTable from '@/components/Table/PropTable/index.vue'
-  const data = []
+  // const data = []
+  const data = ref([]); 
+
 //   for (let i = 0; i < 100; i++) {
 //     data.push({
 //       date: '2016-05-02',
@@ -101,60 +66,11 @@
     price: null,
   })
   
-  const rules = reactive({
-    name: [
-      { required: true, message: '请输入活动名称活动区域', trigger: 'blur' },
-      { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' },
-    ],
-    price: [{ required: true, message: '请输入价格', trigger: 'blur' }],
-    sex: [
-      {
-        required: true,
-        message: '请选择性别',
-        trigger: 'change',
-      },
-    ],
-  })
-  
+
   const dialogVisible = ref(false)
   const title = ref('新增')
   const rowObj = ref({})
   const selectObj = ref([])
-  
-  const handleClose = async (done: () => void) => {
-    await ruleFormRef.value.validate((valid, fields) => {
-      if (valid) {
-        let obj = {
-          id: Date.now(),
-          ...ruleForm,
-          age: 0,
-          city: '普陀区',
-          address: '上海市普上海',
-          zip: 200333,
-          province: '上海',
-          admin: 'admin',
-          date: dayjs().format('YYYY-MM-DD'),
-        }
-        if (title.value === '新增') {
-          list.value = [obj, ...list.value]
-          ElMessage.success('添加成功')
-        } else {
-          list.value.forEach((item) => {
-            if (item.id === rowObj.value.id) {
-              item.name = obj.name
-              item.sex = obj.sex
-              item.price = obj.price
-            }
-          })
-        }
-        dialogVisible.value = false
-        console.log('submit!', obj)
-      } else {
-        console.log('error submit!', fields)
-      }
-    })
-  }
-  
   const add = () => {
     title.value = '新增'
     dialogVisible.value = true
@@ -217,13 +133,26 @@
   }
   
   const onSubmit = (val) => {
-    console.log('val===', val)
-    ElMessage.success('触发查询方法')
-    loading.value = true
-    setTimeout(() => {
-      loading.value = false
-    }, 500)
-  }
+    console.log('val===', val);
+    ElMessage.success('触发查询方法');
+
+    // 使用筛选功能筛选表格数据
+    let filteredData = data.value.filter(item => {
+      let match = true;
+      
+      // 对每一个查询参数进行检查
+      if (val.id && Number(item.id) !== Number(val.id)) match = false;
+      if (val.solcVersion && item.solcVersion !== val.solcVersion) match = false;
+      // 如果有其他参数，继续加入筛选条件...
+
+      return match;
+    });
+
+    // 更新list，即表格的显示数据
+    list.value = filteredData;
+}
+
+
   
   const getHeight = ()=>{
   
@@ -239,16 +168,14 @@
 
   onMounted(() => {
     nextTick(()=>{
-        
-    const loading = ref(true);
-    const data = ref([]);
       // let data = appContainer.value.
        // 在nextTick中获取数据，以确保在视图更新后执行
        axios.get('http://42.194.184.32:8080/record')
           .then(response => {
             data.value = response.data;
             loading.value = false; // 数据加载完成后隐藏加载动画
-            console.log(data.value)
+            // console.log(data.value)
+            console.log('获取到的数据:', response.data);
             list.value = response.data;
           })
           .catch(error => {
@@ -270,6 +197,7 @@
     flex: 1;
     display: flex;
     width: 100%;
+    height: auto;
     padding: 16px;
     box-sizing: border-box;
   }

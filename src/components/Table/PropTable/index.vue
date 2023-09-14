@@ -31,11 +31,8 @@
         <el-button type="primary" @click="onSubmit" :icon="Search">查询</el-button>
         <el-button @click="reset(ruleFormRef)">重置</el-button>
         <el-button link type="primary" @click="isExpand = !isExpand"
-          >{{ isExpand ? '合并' : '展开'
-          }}<el-icon>
-            <arrow-down v-if="!isExpand" />
-            <arrow-up v-else /> </el-icon
-        ></el-button>
+          >{{ isExpand ? '合并' : ''
+          }}</el-button>
       </div>
     </div>
     <!----------底部---------------------->
@@ -97,10 +94,10 @@
       <div class="pagination">
         <el-pagination
           v-model:currentPage="currentPage1"
-          :page-sizes="[10, 20, 30, 40, 50, 100]"
+          :page-sizes="[20, 30, 40, 50, 100]"
           background
           layout="total, sizes, prev, pager, next, jumper"
-          :total="data.length"
+          :total="props.data.length"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
         />
@@ -134,7 +131,7 @@
   // 收缩展开
   const isExpand = ref(false)
   // 每页显示几个数据
-  const pageSize = ref(10)
+  const pageSize = ref(20)
   const handleSizeChange = (val: number) => {
     console.log(`${val} items per page`)
     pageSize.value = val
