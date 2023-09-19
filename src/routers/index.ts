@@ -18,7 +18,8 @@ import externalLink from './modules/externalLink'
 import functionPageRouter from './modules/functionPage'
 import contractRouter from './modules/contractcheck';
 import checkRecords from './modules/checkrecords'
-import dynamicCheck from './modules/dynamicCheck';
+// import dynamicCheck from './modules/dataflow';
+import dataflow from './modules/dataflow';
 
 // 异步组件
 export const asyncRoutes = [
@@ -29,7 +30,7 @@ export const asyncRoutes = [
     //...tableRouter,
     // ...formRouter,
     // ...othersRouter,
-    ...dynamicCheck,
+    ...dataflow,
     // ...functionPageRouter,
     // ...chatRouter,
     // ...nestedRouter,

@@ -3,7 +3,7 @@
     <div class="header">
       <el-form :inline="true" class="search-form" :model="formInline" ref="ruleFormRef">
         <template v-for="(item, index) in formSearchData" :key="index">
-          <el-form-item :label="item.label" v-show="isExpand ? isExpand : index < 2">
+          <el-form-item :label="item.label" v-show="isExpand ? isExpand : index < 1">
             <template v-if="item.valueType === 'input'">
               <el-input v-model="formInline[item.name]" :placeholder="`请输入${item.label}`" />
             </template>
@@ -28,6 +28,8 @@
         </template>
       </el-form>
       <div class="search">
+        <input type="file" ref="fileInput" @change="handleFileChange" accept=".zip" style="display: none;">
+        <el-button type="primary" @click="triggerFileInput" v-if="showButton">上传pcap流量包</el-button>
         <el-button type="primary" @click="onSubmit" :icon="Search">查询</el-button>
         <el-button @click="reset(ruleFormRef)">重置</el-button>
         <el-button link type="primary" @click="isExpand = !isExpand"
@@ -106,12 +108,13 @@
   </div>
 </template>
 <script lang="ts" setup>
+
   import { computed, ref } from 'vue'
   import { Search } from '@element-plus/icons-vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import type { FormInstance } from 'element-plus'
   const ruleFormRef = ref<FormInstance>()
-  const emit = defineEmits(['reset', 'onSubmit', 'selection-change'])
+  const emit = defineEmits(['reset', 'onSubmit', 'selection-change', 'upload', 'triggerFileInput'])
   let props = defineProps({
     columns: {
       type: Array<any>,
@@ -125,8 +128,12 @@
       type: Boolean,
       default: false,
     },
+    showButton:{
+      type: Boolean,
+      default: false,
+    }
   })
-
+  const fileInput = ref(null)
   const currentPage1 = ref(1)
   // 收缩展开
   const isExpand = ref(false)
@@ -172,6 +179,21 @@
   const onSubmit = () => {
     console.log('submit!', formInline)
     emit('onSubmit', formInline)
+  }
+  const upload = () =>{
+    // const formData = new FormData()
+    // formData.append('file', file)
+    // axios.post('/upload', formData)
+    console.log('成功获取流量包')
+  }
+  const triggerFileInput = () => {
+    fileInput.value.click()
+  }
+  const handleFileChange = (event) => {
+    const file = event.target.files[0]
+    if (file) {
+      upload(file)
+    }
   }
 
   const reset = (formEl: FormInstance | undefined) => {
