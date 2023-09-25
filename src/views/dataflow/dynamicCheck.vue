@@ -5,9 +5,15 @@
           @selection-change="selectionChange"
           :columns="column"
           :data="list"
-          :showButton=true
+          :showButton=false
+          :showSuperVersion=true
+          :showNums=true
+          :nodes="versionNodes"
+          :nodeCount="nodecount"
           @reset="reset"
           @onSubmit="onSubmit"
+          @handleSelectChange="handleSelectChange"
+          :linkToNormal="['protocol']" 
       >
         <template v-slot:btn>
           <div style="display: flex; justify-content: flex-end">
@@ -40,26 +46,10 @@
   import PropTable from '@/components/Table/PropTable/index.vue'
   // const data = []
   const data = ref([]); 
-
-//   for (let i = 0; i < 100; i++) {
-//     data.push({
-//       date: '2016-05-02',
-//       name: '王五' + i,
-//       price: 1 + i,
-//       province: '上海',
-//       admin: 'admin',
-//       sex: i % 2 ? 1 : 0,
-//       checked: true,
-//       id: i + 1,
-//       age: 0,
-//       city: '普陀区',
-//       address: '上海市普上海',
-//       zip: 200333,
-//     })
-//   }
   const list = ref(data)
-  
+  const versionNodes = ref([])
   const formSize = ref('default')
+  const nodecount = ref(0)
   const ruleFormRef = ref<FormInstance>()
   const ruleForm = reactive({
     name: '',
@@ -133,6 +123,27 @@
     ElMessage.success('触发重置方法')
   }
   
+
+  
+  const handleSelectChange = async (val) => {
+    console.log('Selected value changed to:', val);
+    
+    try {
+        // 使用axios调用API
+        const response = await axios.get(`http://42.194.184.32:8080/search/${val}`);
+        
+        if (response.status === 200) {
+            // 使用从API返回的数据更新list
+            console.log(response.data)
+            list.value = response.data;
+        } else {
+            console.error('Error fetching data:', response.status, response.statusText);
+        }
+    } catch (error) {
+        console.error('Error fetching data:', error);
+    }
+}
+
   const onSubmit = (val) => {
     console.log('val===', val);
     ElMessage.success('触发查询方法');
@@ -163,30 +174,30 @@
     {name: 'time', label: '时间', inSearch: true, valueType: 'input'},
     { name: 'ttl', label: 'TTL', inSearch: true, valueType: 'input', width:180 },
     { name: 'len', label: 'LEN', inSearch: true, valueType: 'input' , width: 180},
-    { name: 'linkway', label: 'TCP/UDP', sorter: true, inSearch: true, valueType: 'input', width: 180 },
-    { name: 'sourceip', label: '源IP', sorter: true, inSearch: true, valueType: 'input', width: 280 },
-    { name: 'sourceport', label: '源端口', sorter: true, inSearch: true, type: 'link', width: 80 },
-    { name: 'targetip', label: '目标IP', inSearch: true, valueType: 'input' ,width : 280},
-    { name: 'targetport', label: '目标端口', inSearch: true, valueType: 'input' , width: 100},
-    { name: 'isrisk', label: '是否具有风险', sorter: true, inSearch: true, type: 'link', width: 280 },
+    { name: 'protocol', label: 'TCP/UDP', sorter: true, inSearch: true, valueType: 'input', width: 180 },
+    { name: 'source_ip', label: '源IP', sorter: true, inSearch: true, valueType: 'input', width: 280 },
+    { name: 'source_port', label: '源端口', sorter: true, inSearch: true, valueType: 'input', width: 80 },
+    { name: 'destination_ip', label: '目标IP', inSearch: true, valueType: 'input' ,width : 280},
+    { name: 'destination_port', label: '目标端口', inSearch: true, valueType: 'input' , width: 100},
+    { name: 'risklevel', label: '是否具有风险', sorter: true, inSearch: true, valueType: 'input', width: 280 },
   ]
 
   onMounted(() => {
     nextTick(()=>{
-      // let data = appContainer.value.
-       // 在nextTick中获取数据，以确保在视图更新后执行
-       axios.get('')
-          .then(response => {
-            data.value = response.data;
-            loading.value = false; // 数据加载完成后隐藏加载动画
-            // console.log(data.value)
-            console.log('获取到的数据:', response.data);
-            list.value = response.data;
-          })
-          .catch(error => {
-            console.error('获取数据失败', error);
-            loading.value = false; // 处理错误情况，也隐藏加载动画
-          });
+      axios.get('http://42.194.184.32:8080/active_nodes')
+    .then(response => {
+      const data = response.data;
+      list.value = data.data || [];  // 请按照你的API结构进行调整
+      versionNodes.value = data.nodes.map(node => {
+        return { value: node, label: node };
+      });
+      nodecount.value = data.count;
+      loading.value = false;
+    })
+    .catch(error => {
+      console.error('获取数据失败', error);
+      loading.value = false;
+    });
     })
     setTimeout(() => {
       loading.value = false

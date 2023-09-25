@@ -4,7 +4,7 @@ const dataflow = [{
     path: '/dataflow',
     component: Layout,
     redirect: '/dataflow/staticCheck',
-    name: 'dynamicCheck',
+    name: 'dataflowcCheck',
     meta: {
         title: '流量检测',
         icon: 'MenuIcon'
@@ -16,6 +16,12 @@ const dataflow = [{
             name: 'staticCheck',
             meta: { title: '静态流量分析', keepAlive: true , icon: 'MenuIcon'}
         },
+        {
+            path: '/dataflow/dynamicCheck',
+            component: () => import('@/views/dataflow/dynamicCheck.vue'),
+            name: 'dynamicCheck',
+            meta: { title: '动态流量分析', keepAlive: true , icon: 'MenuIcon'}
+        }
     ]
 }]
 

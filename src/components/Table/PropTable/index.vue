@@ -27,8 +27,29 @@
           </el-form-item>
         </template>
       </el-form>
+      <el-select 
+  v-model="selectedValue" 
+  placeholder="请选择监控节点" 
+  style="width: 20%;"
+  v-if="showSuperVersion"
+  @change="handleSelectChange"
+>
+  <el-option
+    v-for="node in nodes"
+    :key="node.value"
+    :label="node.label"
+    :value="node.value">
+  </el-option>
+</el-select>
+
+<span 
+    style="display: inline-block; width: 100%; height: 10%; padding-top: 5px; padding-left: 2%;" 
+    v-if="showNums">
+    当前监控节点数：{{ nodeCount }}
+</span>
+
       <div class="search">
-        <input type="file" ref="fileInput" @change="handleFileChange" accept=".zip" style="display: none;">
+        <input type="file" ref="fileInput" @change="handleFileChange" accept=".pcap" multiple style="display: none;">
         <el-button type="primary" @click="triggerFileInput" v-if="showButton">上传pcap流量包</el-button>
         <el-button type="primary" @click="onSubmit" :icon="Search">查询</el-button>
         <el-button @click="reset(ruleFormRef)">重置</el-button>
@@ -114,15 +135,25 @@
   import { ElMessage, ElMessageBox } from 'element-plus'
   import type { FormInstance } from 'element-plus'
   const ruleFormRef = ref<FormInstance>()
-  const emit = defineEmits(['reset', 'onSubmit', 'selection-change', 'upload', 'triggerFileInput'])
+  const emit = defineEmits(['reset', 'onSubmit', 'selection-change', 'upload', 'triggerFileInput','handleSelectChange'])
+  const selectedValue = ref(null)
   let props = defineProps({
     columns: {
       type: Array<any>,
       default: () => [],
     },
+    nodes:{
+      type: Array<any>,
+      default: () => [],
+    }
+    ,
     data: {
       type: Array<any>,
       default: () => [],
+    },
+    nodeCount:{
+      type: Number,
+      default: 0,
     },
     loading: {
       type: Boolean,
@@ -131,6 +162,14 @@
     showButton:{
       type: Boolean,
       default: false,
+    },
+    showSuperVersion:{
+      type: Boolean,
+      default: false,
+    },
+    showNums:{
+      type:Boolean,
+      default:false,
     }
   })
   const fileInput = ref(null)
@@ -175,7 +214,11 @@
   }
   const formSearchData = ref(search)
   const formInline = reactive(obj)
+  const handleSelectChange = (newValue) =>{
+    console.log('Child component: selected value changed to:', newValue);
+    emit('handleSelectChange',newValue)
 
+  }
   const onSubmit = () => {
     console.log('submit!', formInline)
     emit('onSubmit', formInline)
