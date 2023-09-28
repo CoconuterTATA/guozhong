@@ -129,7 +129,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-
+  import  axios  from 'axios';
   import { computed, ref } from 'vue'
   import { Search } from '@element-plus/icons-vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
@@ -223,20 +223,27 @@
     console.log('submit!', formInline)
     emit('onSubmit', formInline)
   }
-  const upload = () =>{
-    // const formData = new FormData()
-    // formData.append('file', file)
-    // axios.post('/upload', formData)
-    console.log('成功获取流量包')
+  const upload = (files) => {  // 添加了files参数
+  const formData = new FormData();
+  for (let i = 0; i < files.length; i++) {
+    formData.append('file', files[i]);
   }
+  axios.post('http://42.194.184.32:8080/uploadTrafficFile', formData)
+    .then(response => {
+      console.log('上传成功', response.data);
+    })
+    .catch(error => {
+      console.error('上传失败', error);
+    });
+}
   const triggerFileInput = () => {
-    fileInput.value.click()
+    fileInput.value.click(); 
   }
   const handleFileChange = (event) => {
-    const file = event.target.files[0]
-    if (file) {
-      upload(file)
-    }
+    const files = event.target.files;
+      if (files.length > 0) {
+        upload(files); // Upload the selected files
+      }
   }
 
   const reset = (formEl: FormInstance | undefined) => {

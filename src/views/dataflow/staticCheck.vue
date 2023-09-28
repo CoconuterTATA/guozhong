@@ -40,23 +40,6 @@
   import PropTable from '@/components/Table/PropTable/index.vue'
   // const data = []
   const data = ref([]); 
-
-//   for (let i = 0; i < 100; i++) {
-//     data.push({
-//       date: '2016-05-02',
-//       name: '王五' + i,
-//       price: 1 + i,
-//       province: '上海',
-//       admin: 'admin',
-//       sex: i % 2 ? 1 : 0,
-//       checked: true,
-//       id: i + 1,
-//       age: 0,
-//       city: '普陀区',
-//       address: '上海市普上海',
-//       zip: 200333,
-//     })
-//   }
   const list = ref(data)
   
   const formSize = ref('default')
@@ -149,6 +132,10 @@
       return match;
     });
 
+
+
+
+
     // 更新list，即表格的显示数据
     list.value = filteredData;
 }
@@ -160,22 +147,22 @@
   }
   const column = [
     // { type: 'selection', width: 60 ,fixed: 'left'},
-    {name: 'time', label: '时间', inSearch: true, valueType: 'input'},
-    { name: 'ttl', label: 'TTL', inSearch: true, valueType: 'input', width:180 },
-    { name: 'len', label: 'LEN', inSearch: true, valueType: 'input' , width: 180},
-    { name: 'linkway', label: 'TCP/UDP', sorter: true, inSearch: true, valueType: 'input', width: 180 },
-    { name: 'sourceip', label: '源IP', sorter: true, inSearch: true, valueType: 'input', width: 280 },
-    { name: 'sourceport', label: '源端口', sorter: true, inSearch: true, type: 'link', width: 80 },
-    { name: 'targetip', label: '目标IP', inSearch: true, valueType: 'input' ,width : 280},
-    { name: 'targetport', label: '目标端口', inSearch: true, valueType: 'input' , width: 100},
-    { name: 'isrisk', label: '是否具有风险', sorter: true, inSearch: true, type: 'link', width: 280 },
+    {name: 'sessionId', label: '会话ID', inSearch: true, valueType: 'input'},
+    { name: 'sessionName', label: '会话名', inSearch: true, valueType: 'input', width:180 },
+    { name: 'protocol', label: 'TCP/UDP', sorter: true, inSearch: true, valueType: 'input', width: 180 },
+    { name: 'sourceIp', label: '源IP', sorter: true, inSearch: true, valueType: 'input', width: 280 },
+    { name: 'sourcePort', label: '源端口', sorter: true, inSearch: true, valueType: 'input', width: 80 },
+    { name: 'destinationIp', label: '目标IP', inSearch: true, valueType: 'input' ,width : 280},
+    { name: 'destinationPort', label: '目标端口', inSearch: true, valueType: 'input' , width: 100},
+    { name: 'detectResult', label: '是否具有风险', sorter: true, inSearch: true, valueType: 'input', width: 280 },
+    { name: 'trafficfileName', label: '检测流量文件名', sorter: true, inSearch: true, valueType: 'input', width: 280}
   ]
 
   onMounted(() => {
     nextTick(()=>{
       // let data = appContainer.value.
        // 在nextTick中获取数据，以确保在视图更新后执行
-       axios.get('')
+       axios.get('http://42.194.184.32:8080/trafficDetect')
           .then(response => {
             data.value = response.data;
             loading.value = false; // 数据加载完成后隐藏加载动画
