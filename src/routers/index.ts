@@ -20,12 +20,14 @@ import contractRouter from './modules/contractcheck';
 import checkRecords from './modules/checkrecords'
 // import dynamicCheck from './modules/dataflow';
 import dataflow from './modules/dataflow';
+import contractDetector from './modules/contractdetector';
 
 // 异步组件
 export const asyncRoutes = [
     //...dataScreenRouter,
     // ...echartsRouter,
     ...contractRouter,
+    ...contractDetector,
     // ...checkRecords,
     //...tableRouter,
     // ...formRouter,
