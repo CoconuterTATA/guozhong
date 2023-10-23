@@ -100,7 +100,7 @@
         :label="item.label"
       >
         <template #default="scope">
-          <a :href="scope.row[item.name]">{{ scope.row[item.name] }}</a>
+          <a :href="scope.row[item.name]" >{{ scope.row[item.name] }}</a>
         </template>
       </el-table-column>
       <el-table-column
@@ -120,7 +120,7 @@
         :label="item.label"
       >
         <template #default="scope">
-          <span v-if="!item.slot">{{ scope.row[item.name] }}</span>
+          <span v-if="!item.slot" @click="handleCellClick(scope.row[item.name], scope.row)">{{ scope.row[item.name] }}</span>
           <slot v-else :name="item.name" :item="item" :row="scope.row"></slot>
           
         </template>
@@ -151,7 +151,7 @@
   import { ElMessage, ElMessageBox } from 'element-plus'
   import type { FormInstance } from 'element-plus'
   const ruleFormRef = ref<FormInstance>()
-  const emit = defineEmits(['reset', 'onSubmit', 'selection-change', 'upload', 'triggerFileInput','handleSelectChange'])
+  const emit = defineEmits(['reset', 'onSubmit', 'selection-change', 'upload', 'triggerFileInput','handleSelectChange', 'handleCellClick'])
   const selectedValue = ref(null)
   let props = defineProps({
     columns: {
@@ -188,6 +188,7 @@
       default:false,
     }
   })
+
   const selectedFiles = ref([]);
 
   const fileInput = ref(null)
@@ -198,6 +199,13 @@
   const pageSize = ref(20)
   const uploadedFiles = ref([]);
   const showFileDialog = ref(false);
+
+  const handleCellClick = (value, row) => {
+    console.log('Clicked value:', value);
+    console.log('Entire row data:', row);
+    emit('handleCellClick',value,row)
+    // 这里您可以进行更多操作，例如触发事件，展示模态窗口等
+}
 
   const uploadFiles = () => {
     upload(selectedFiles.value); 

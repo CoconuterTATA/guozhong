@@ -13,6 +13,7 @@
           @reset="reset"
           @onSubmit="onSubmit"
           @handleSelectChange="handleSelectChange"
+          @handleCellClick="handleCellClick"
           :linkToNormal="['protocol']" 
       >
         <template v-slot:btn>
@@ -123,7 +124,10 @@
     ElMessage.success('触发重置方法')
   }
   
-
+  const handleCellClick = async (value, row) =>{
+    console.log('Dynamic Selected value changed to:', value);
+    console.log(row)
+  }
   
   const handleSelectChange = async (val) => {
     console.log('Selected value changed to:', val);
