@@ -48,6 +48,22 @@
     当前监控节点数：{{ nodeCount }}
 </span>
 
+<ul v-if="selectedFiles.length > 0">
+    <li v-for="file in selectedFiles" :key="file.name">{{ file.name }}</li>
+</ul>
+<el-button 
+    type="primary" 
+    @click="uploadFiles" 
+    v-if="selectedFiles.length > 0">
+    上传
+</el-button>
+<el-button 
+    @click="cancelFiles" 
+    v-if="selectedFiles.length > 0">
+    取消
+</el-button>
+
+
       <div class="search">
         <input type="file" ref="fileInput" @change="handleFileChange" accept=".pcap" multiple style="display: none;">
         <el-button type="primary" @click="triggerFileInput" v-if="showButton">上传pcap流量包</el-button>
@@ -172,12 +188,29 @@
       default:false,
     }
   })
+  const selectedFiles = ref([]);
+
   const fileInput = ref(null)
   const currentPage1 = ref(1)
   // 收缩展开
   const isExpand = ref(false)
   // 每页显示几个数据
   const pageSize = ref(20)
+  const uploadedFiles = ref([]);
+  const showFileDialog = ref(false);
+
+  const uploadFiles = () => {
+    upload(selectedFiles.value); 
+    selectedFiles.value = []; 
+    fileInput.value.value = ''; // 清空文件输入的值
+};
+
+const cancelFiles = () => {
+    selectedFiles.value = [];
+    fileInput.value.value = ''; // 清空文件输入的值
+};
+
+
   const handleSizeChange = (val: number) => {
     console.log(`${val} items per page`)
     pageSize.value = val
@@ -228,6 +261,7 @@
   for (let i = 0; i < files.length; i++) {
     formData.append('file', files[i]);
   }
+  
   axios.post('http://42.194.184.32:8080/uploadTrafficFile', formData)
     .then(response => {
       console.log('上传成功', response.data);
@@ -241,10 +275,10 @@
   }
   const handleFileChange = (event) => {
     const files = event.target.files;
-      if (files.length > 0) {
-        upload(files); // Upload the selected files
-      }
-  }
+    selectedFiles.value = Array.from(files);
+};
+
+
 
   const reset = (formEl: FormInstance | undefined) => {
     formSearchData.value.forEach((item) => {

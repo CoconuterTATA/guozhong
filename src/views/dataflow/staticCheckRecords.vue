@@ -5,7 +5,7 @@
           @selection-change="selectionChange"
           :columns="column"
           :data="list"
-          :showButton=true
+          :showButton=false
           @reset="reset"
           @onSubmit="onSubmit"
       >

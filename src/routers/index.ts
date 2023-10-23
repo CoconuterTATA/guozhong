@@ -16,8 +16,7 @@ import othersRouter from './modules/other'
 import externalLink from './modules/externalLink'
 // import formRouter from './modules/form'
 import functionPageRouter from './modules/functionPage'
-import contractRouter from './modules/contractcheck';
-import checkRecords from './modules/checkrecords'
+import contractCheck from './modules/smartfastCheck';
 // import dynamicCheck from './modules/dataflow';
 import dataflow from './modules/dataflow';
 import contractDetector from './modules/contractdetector';
@@ -26,7 +25,7 @@ import contractDetector from './modules/contractdetector';
 export const asyncRoutes = [
     //...dataScreenRouter,
     // ...echartsRouter,
-    ...contractRouter,
+    ...contractCheck,
     ...contractDetector,
     // ...checkRecords,
     //...tableRouter,

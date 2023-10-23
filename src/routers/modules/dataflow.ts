@@ -11,6 +11,12 @@ const dataflow = [{
     },
     children: [
         {
+            path: '/dataflow/staticCheckRecords',
+            component: () => import('@/views/dataflow/staticCheckRecords.vue'),
+            name: 'staticCheckRecords',
+            meta: { title: '静态流量分析记录', keepAlive: true , icon: 'MenuIcon'}
+        },
+        {
             path: '/dataflow/staticCheck',
             component: () => import('@/views/dataflow/staticCheck.vue'),
             name: 'staticCheck',

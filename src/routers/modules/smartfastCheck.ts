@@ -1,9 +1,9 @@
 import Layout from "@/layout/index.vue";
 
-const contractRouter = [{
+const contractCheck = [{
     path: '/contractCheck',
     component: Layout,
-    redirect: '/contractCheck/smartfast',
+    redirect: '/contractCheck/',
     name: 'contractCheck',
     meta: {
         title: 'SmartFast合约检测',
@@ -17,12 +17,12 @@ const contractRouter = [{
             meta: { title: 'SmartFast检测台', keepAlive: true , icon: 'MenuIcon'}
         },
         {
-            path: '/records/checkRecords',
+            path: '/contractCheck/smartfastRecords',
             component: () => import('@/views/contractCheck/checkRecords.vue'),
-            name: '合约检测记录查询',
-            meta: { title: '合约检测记录查询', keepAlive: true , icon: 'School'}
+            name: '合约检测记录',
+            meta: { title: '合约检测记录', keepAlive: true , icon: 'MenuIcon'}
         },
     ]
 }]
 
-export default contractRouter
+export default contractCheck
