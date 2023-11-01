@@ -257,6 +257,8 @@ onMounted(() => {
   // }
 
   .card-content {
+    font-family: 'Roboto', sans-serif; /* 使用Roboto字体 */
+    color: #8a2c2c;  
     position: sticky;
     top: 20px;
     width: 100%;
@@ -276,6 +278,7 @@ onMounted(() => {
 }
 
 .card-content h3, .card-content p {
+    
     border-bottom: 1px solid #e0e0e0;  /* 添加底部边框 */
     margin-bottom: 15px;  /* 控制横线之间的间隔 */
     padding-bottom: 10px;  /* 控制文字到横线的距离 */
