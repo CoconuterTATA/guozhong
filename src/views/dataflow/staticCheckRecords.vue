@@ -8,6 +8,7 @@
           :showButton=false
           @reset="reset"
           @onSubmit="onSubmit"
+          @handleCellClick="handleCellClick"
       >
         <template v-slot:btn>
           <div style="display: flex; justify-content: flex-end">
@@ -81,6 +82,8 @@
     selectObj.value = val
   }
   
+
+
   const edit = (row) => {
     title.value = '编辑'
     rowObj.value = row
@@ -146,24 +149,79 @@
   const getHeight = ()=>{
   
   }
-  const column = [
+  const column = ref([
     // { type: 'selection', width: 60 ,fixed: 'left'},
-    {name: 'sessionId', label: '会话ID', inSearch: true, valueType: 'input'},
-    { name: 'sessionName', label: '会话名', inSearch: true, valueType: 'input', width:180 },
-    { name: 'protocol', label: 'TCP/UDP', sorter: true, inSearch: true, valueType: 'input', width: 180 },
-    { name: 'sourceIp', label: '源IP', sorter: true, inSearch: true, valueType: 'input', width: 280 },
-    { name: 'sourcePort', label: '源端口', sorter: true, inSearch: true, valueType: 'input', width: 80 },
-    { name: 'destinationIp', label: '目标IP', inSearch: true, valueType: 'input' ,width : 280},
-    { name: 'destinationPort', label: '目标端口', inSearch: true, valueType: 'input' , width: 100},
-    { name: 'detectResult', label: '是否具有风险', sorter: true, inSearch: true, valueType: 'input', width: 280 },
-    { name: 'trafficfileName', label: '检测流量文件名', sorter: true, inSearch: true, valueType: 'input', width: 280}
-  ]
+    {name: 'id', label: 'ID', inSearch: true, valueType: 'input', width: 100},
+    { name: 'trafficFileName', label: '流量文件名', inSearch: true, valueType: 'input', width:180 },
+    { name: 'createdTime', label: '创建时间', sorter: true, inSearch: true, valueType: 'input', width: 180 },
+    { name: 'sessionNum', label: '会话数量', sorter: true, inSearch: true, valueType: 'input', width: 120 },
+    { name: 'path', label: '存储路径', inSearch: true, valueType: 'input' ,},
+
+  ])
+
+  const handleCellClick = async (value, row) => {
+  console.log('Static Selected value changed to:', value);
+  console.log('Static row:', row);
+
+  // 根据 row 的属性来决定要执行的操作
+  if ('sessionName' in row) {   // 使用 'in' 来检查属性是否存在
+    fetchDetailsBySessionId(value);
+  } else if ('id' in row) {
+    fetchListBySessionId(value);
+  }
+}
+
+const fetchDetailsBySessionId = (sessionId) => {
+  // 更新表结构为会话详情
+  column.value = [ 
+    // ... 你的会话详情结构
+  ];
+  
+  loading.value = true; // 开启加载动画
+  axios.post(`http://42.194.184.32:8080/pcap/listPacketsBySessionld`, { session_id: sessionId })
+    .then(response => {
+      console.error('根据会话Name获取详情成功');
+      console.log(response.data);
+      list.value = response.data; // 更新list的值
+      loading.value = false; // 数据加载完成后隐藏加载动画
+    })
+    .catch(error => {
+      console.error('根据会话Name获取详情失败', error);
+      loading.value = false; // 处理错误情况，也隐藏加载动画
+    });
+}
+
+
+const fetchListBySessionId = (para) => {
+
+column.value = [
+  {name: 'sessionId', label: '会话ID', inSearch: true, valueType: 'input', width: 100},
+  {name: 'sessionName', label: '会话名', inSearch: true, valueType: 'input', width: 100},
+  {name: 'sourceIp', label: '源IP', inSearch: true, valueType: 'input', width: 400},
+  { name: 'destinationIp', label: '目标IP', inSearch: true, valueType: 'input', width:180 },
+  { name: 'destinationPort', label: '目标端口', sorter: true, inSearch: true, valueType: 'input', width: 180 },
+  { name: 'detectResult', label: '风险等级', sorter: true, inSearch: true, valueType: 'input', width: 80 },
+  { name: 'protocol', label: '协议', inSearch: true, valueType: 'input' ,},
+]
+loading.value = true; // 开启加载动画
+axios.post(`http://42.194.184.32:8080/pcap/listSessionByTrafficId?traffic_id=${para}`)
+  .then(response => {
+    console.error('根据sessionId获取数据成功');
+    console.log(response.data);
+    list.value = response.data; // 更新list的值
+    loading.value = false; // 数据加载完成后隐藏加载动画
+  })
+  .catch(error => {
+    console.error('根据sessionId获取数据失败', error);
+    loading.value = false; // 处理错误情况，也隐藏加载动画
+  });
+}
 
   onMounted(() => {
     nextTick(()=>{
       // let data = appContainer.value.
        // 在nextTick中获取数据，以确保在视图更新后执行
-       axios.get('http://42.194.184.32:8080/trafficDetect')
+       axios.get('http://42.194.184.32:8080/pcap/listDetectRecord')
           .then(response => {
             data.value = response.data;
             loading.value = false; // 数据加载完成后隐藏加载动画

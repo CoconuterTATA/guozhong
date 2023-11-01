@@ -202,7 +202,7 @@
 
   const handleCellClick = (value, row) => {
     console.log('Clicked value:', value);
-    console.log('Entire row data:', row);
+    // console.log('Entire row data:', row);
     emit('handleCellClick',value,row)
     // 这里您可以进行更多操作，例如触发事件，展示模态窗口等
 }

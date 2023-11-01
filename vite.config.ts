@@ -63,7 +63,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
     server: {
       // 服务器主机名，如果允许外部访问，可设置为 "0.0.0.0" 也可设置成你的ip地址
       host: '0.0.0.0',
-      port: 9091,
+      port: 8080,
       open: true,
       https: false,
       cors: true,
@@ -90,6 +90,12 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
           changeOrigin: true,
           rewrite: path => path.replace(/^\/serach/, "")
         },
+        "/pcap/listPacketsBySessionld": {
+          target: "http://42.194.184.32:8080",  // 设置为您的后端服务器地址
+          changeOrigin: true,
+          rewrite: path => path.replace(/^\/serach/, "")
+        },
+        //http://42.194.184.32:8080/pcap/listPacketsBySessionld
         
       }
       

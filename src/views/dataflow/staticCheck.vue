@@ -163,18 +163,18 @@
     nextTick(()=>{
       // let data = appContainer.value.
        // 在nextTick中获取数据，以确保在视图更新后执行
-       axios.get('http://42.194.184.32:8080/trafficDetect')
-          .then(response => {
-            data.value = response.data;
-            loading.value = false; // 数据加载完成后隐藏加载动画
-            // console.log(data.value)
-            console.log('获取到的数据:', response.data);
-            list.value = response.data;
-          })
-          .catch(error => {
-            console.error('获取数据失败', error);
-            loading.value = false; // 处理错误情况，也隐藏加载动画
-          });
+      //  axios.get('http://42.194.184.32:8080/trafficDetect')
+      //     .then(response => {
+      //       data.value = response.data;
+      //       loading.value = false; // 数据加载完成后隐藏加载动画
+      //       // console.log(data.value)
+      //       console.log('获取到的数据:', response.data);
+      //       list.value = response.data;
+      //     })
+      //     .catch(error => {
+      //       console.error('获取数据失败', error);
+      //       loading.value = false; // 处理错误情况，也隐藏加载动画
+      //     });
     })
     setTimeout(() => {
       loading.value = false
