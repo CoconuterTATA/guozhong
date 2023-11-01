@@ -12,7 +12,7 @@ const contractDetector = [{
     children: [
         {
             path: '/contractdetector/detector',
-            component: () => import('@/views/contractCheck/smartfast.vue'),
+            component: () => import('@/views/contractCheck/checkDectorRecords.vue'),
             name: 'oyenet检测台',
             meta: { title: 'oyenet检测台', keepAlive: true , icon: 'MenuIcon'}
         },

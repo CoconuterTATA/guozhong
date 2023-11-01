@@ -3,7 +3,7 @@
       <div class="header">
         <el-card>
           <div>
-            <span>SmartFast合约检测台</span>
+            <span>Oyenet合约检测台</span>
           </div>
         </el-card>
       </div>
@@ -27,15 +27,27 @@
         <div></div>
       </div>
     </div>
-              <p>检测报告下载链接：<a :href="downloadLink" download>{{ downloadLinkText }}</a></p>
+              <!-- <p>检测报告下载链接：<a :href="downloadLink" download>{{ downloadLinkText }}</a></p> -->
             </div>
           </el-card>
           <el-card>
-            <div class="app-container">
-              <div class="chart-wrapper" >
-                <div ref="chartsRef" class="app-echarts"></div>
-              </div>
-            </div>
+
+                <!-- <div ref="chartsRef" class="app-echarts"></div> -->
+<div class="card-content">
+  <img :src="imageUrl" alt="iconOfFWC" id="cardImage" class="iconFWC">
+        <h3>漏洞统计</h3>
+        <p>调用栈: {{ callstack }}</p>
+        <p>时间依赖: {{ time_dependency }}</p>
+        <p>重入: {{ reentrancy }}</p>
+        <p>整数溢出: {{ integer_overflow }}</p>
+        <p>多签名合约漏洞: {{ parity_multisig_bug_2 }}</p>
+        <p>整数下溢: {{ integer_underflow }}</p>
+        <p>货币并发: {{ money_concurrency }}</p>
+        <p>断言失败: {{ assertion_failure }}</p>
+        <h3>EVM代码覆盖率: {{ evm_code_coverage }}</h3>
+        <h3>合约类型: {{ contract_type }}</h3>
+</div>
+
             <div class="result-show-text">
               <el-card v-if="auditMessage">
                 <div v-html="auditMessage"></div>
@@ -52,16 +64,31 @@
 
   <script lang="ts" setup>
   // import { ref } from 'vue';
+  import imageUrl from '@/assets/image/FWCicon.png';
   import CodeMirror from '@/components/CodeMirror/index.vue';
   import {ref,onMounted} from "vue";
   import {useResizeElement} from '@/hooks/useResizeElement'
   import * as echarts from 'echarts'
   import axios from 'axios';
+  
   const selectedVersion = ref('');
   const codeValue = ref('');
   const solidityVersions = ['0.8.0', '0.7.5', '0.7.4','0.7.3', '0.7.2', '0.7.1', '0.7.0', '0.5.0', '0.4.24']; // 示例Solidity版本列表
   const downloadLink = "http://42.194.184.32:8080/download"; // 初始化为空
   const downloadLinkText = ref('检测结果下载链接');
+
+  // const imageUrl = require('@/assets/image/FWCicon.png');
+  const callstack = ref([])
+  const time_dependency = ref([])
+  const reentrancy = ref([])
+  const integer_overflow = ref([])
+  const parity_multisig_bug_2 = ref([])
+  const integer_underflow = ref([])
+  const money_concurrency = ref([])
+  const assertion_failure = ref([])
+  const evm_code_coverage = ref(0)
+  const contract_type = ref("")
+
 
   const chartsRef = ref<HTMLElement | null>()
   const reminderValue = ref(0);
@@ -72,105 +99,13 @@
   const backgroundColor = '#101736';
   const auditMessage = ref('');
   const isLoading = ref(false);
-const title = {
-  text: '检测结果',
-  textStyle: {
-    // color: '#fff',
-    fontSize: 16,
-  },
-  padding: 100,
-  top: 5,
-  left: 'center',
-};
-const legend = {
-  //data，就是取得每个series里面的name属性。
-  orient: 'vertical',
-  icon: 'circle', //图例形状
-  padding: 0,
-  bottom: 'center',
-  right: 0,
-  itemWidth: 20, //小圆点宽度
-  itemHeight: 10, // 小圆点高度
-  itemGap: 10, // 图例每项之间的间隔。[ default: 10 ]横向布局时为水平间隔，纵向布局时为纵向间隔。
-  textStyle: {
-    fontSize: 14,
-    // color: '#ffffff',
-  },
-};
-const tooltip = {
-  show: true,
-  formatter: '{b}:{d}%',
-};
-const color = ['#9b59b6', '#3498db', '#ff0000', '#27ae60', '#f39c12'];
-const chartInstance = ref(null);
-let options = {
-  // backgroundColor,
-  color,
-  title,
-  tooltip,
-  legend,
 
-  series: [
-    {
-      name: '合约检测结果',
-      type: 'pie',
-      center: ['50%', '50%'], //圆心的位置
-      top: '2%', //单单指的饼图距离上面的距离，top越大饼图越小
-      left: '0%', //单单指的饼图距离左面的距离，会改变饼图的大小
-      radius: ['0%', '60%'], //环形图的本质就在这里 [内半径!=0，外半径] 外半径越大，圆越大
-      avoidLabelOverlap: false, //做同心圆用到
-      clockwise:false, //顺时针排列
-      startAngle: 160, //起始角度 影响不大
-      roseType:"area", //area|radius
-
-      label: {
-        show: true, //false不显示饼图上的标签
-        position: 'outside', //inside（在饼图上显示）,outside(默认就会出现引导线) center
-        formatter: '{b}:{c}',
-      },
-
-
-      //只有设置了label:show=ture;position=outside 设置labelLine才会有效
-      labelLine: {
-        show: true, //显示引导线
-        length: 10, //连接饼图第1段线条的长度 length length2 不写自适应
-        length2: 10, //链接饼图第2段线条长度
-        smooth: true, //是否光滑连接线
-      },
-      itemStyle: {
-        //每个扇形的设置
-        borderColor: 'rgba(0,0,0,.1)', //扇形边框颜色
-        borderWidth: 0, //扇形边框大小 要先给borderColor颜色 设置borderWidth才会有效果
-
-      },
-      data: [
-      { value: reminderValue.value, name: '提醒' },
-      { value: optimizationValue.value, name: '优化' },
-      { value: highRiskValue.value, name: '高风险漏洞' },
-      { value: lowRiskValue.value, name: '低风险漏洞' },
-      { value: mediumRiskValue.value, name: '中风险漏洞' },
-      ].sort((a, b) => b.value - a.value), //数组从大到小排序
-
-      emphasis: {
-        scale: true,
-        scaleSize: 10,
-
-        //启用鼠标放上去放大效果，这个挺好的
-        itemStyle: {
-          shadowBlur: 10,
-          shadowOffsetX: 0,
-          shadowColor: 'rgba(0, 0, 0, 0.5)',
-        },
-      },
-    },
-  ],
-};
 
 onMounted(() => {
-  chartInstance.value = echarts.init(chartsRef.value);
-  chartInstance.value.setOption(options);
-  let {addObserver} = useResizeElement(chartInstance.value, chartsRef.value);
-  addObserver();
+  // chartInstance.value = echarts.init(chartsRef.value);
+  // chartInstance.value.setOption(options);
+  // let {addObserver} = useResizeElement(chartInstance.value, chartsRef.value);
+  // addObserver();
 })
 
   const submitCode = async () => {
@@ -215,18 +150,6 @@ onMounted(() => {
             </div>
           `;
 
-
-        options.series[0].data = [
-          { value: response.data["need attention"], name: '提醒' },
-          { value: response.data.opt, name: '优化' },
-          { value: response.data.high, name: '高风险漏洞' },
-          { value: response.data.low, name: '低风险漏洞' },
-          { value: response.data.medium, name: '中风险漏洞' }
-        ].sort((a, b) => b.value - a.value); // 从大到小排序
-
-        // 使用setOption方法更新图表
-        chartInstance.value.setOption(options, true);
-        // chart.setOption(options);
     }
 
     console.log('传输成功')
@@ -241,6 +164,7 @@ onMounted(() => {
   </script>
 
   <style lang="scss" scoped>
+  
   .chart-wrapper {
   position: relative;
   bottom: 100px;  /* 这个高度可以根据你的饼图大小调整 */
@@ -325,7 +249,48 @@ onMounted(() => {
   transform: translateX(-50%);
   margin-top: -200px;
 }
+  // .card-content{
+  //   position: sticky;
+  // top: 10px;  /* 距离视口顶部的距离，可以根据需要调整 */
+  // width: 100%;
+  // height: 800px;  /* 这个高度可以根据你的饼图大小调整 */
+  // }
 
+  .card-content {
+    position: sticky;
+    top: 20px;
+    width: 100%;
+    // max-width: 600px; /* 限制最大宽度，增加可读性 */
+    height: 800px; /* 设置为auto使其根据内容调整 */
+    // padding: 20px; /* 增加内边距 */
+    background-color: #ffffff; /* 背景颜色 */
+    border-radius: 8px; /* 圆角 */
+    // box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1); /* 增加一些阴影增加深度感 */
+    padding: 50px 20px 20px 10px;  /* 上, 右, 下, 左 */
+
+    /* 使用Flexbox使内容垂直居中 */
+    // display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.card-content h3, .card-content p {
+    border-bottom: 1px solid #e0e0e0;  /* 添加底部边框 */
+    margin-bottom: 15px;  /* 控制横线之间的间隔 */
+    padding-bottom: 10px;  /* 控制文字到横线的距离 */
+}
+
+.card-content p:last-of-type, .card-content h3:last-of-type {
+    // border-bottom: none;  /* 确保最后一个元素没有边框 */
+}
+
+.iconFWC{
+  padding: 0px 0px 0px 450px;  /* 上, 右, 下, 左 */
+  width: 120px;
+  height: 120px;
+  top: 100px;
+}
 .app-echarts {
   position: sticky;
   top: 10px;  /* 距离视口顶部的距离，可以根据需要调整 */
