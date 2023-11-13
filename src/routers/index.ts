@@ -19,19 +19,23 @@ import functionPageRouter from './modules/functionPage'
 import contractCheck from './modules/smartfastCheck';
 // import dynamicCheck from './modules/dataflow';
 import dataflow from './modules/dataflow';
+import contractSecurityAnalysis from './modules/contractSecurityAnalysis';
 import contractDetector from './modules/contractdetector';
+import gasTime from './modules/gas';
 
 // 异步组件
 export const asyncRoutes = [
-    //...dataScreenRouter,
+    ...dataScreenRouter,
     // ...echartsRouter,
     ...contractCheck,
     ...contractDetector,
+    ...contractSecurityAnalysis,
     // ...checkRecords,
     //...tableRouter,
     // ...formRouter,
     // ...othersRouter,
     ...dataflow,
+    ...gasTime,
     // ...functionPageRouter,
     // ...chatRouter,
     // ...nestedRouter,

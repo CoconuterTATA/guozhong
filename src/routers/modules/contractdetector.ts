@@ -12,13 +12,13 @@ const contractDetector = [{
     children: [
         {
             path: '/contractdetector/detector',
-            component: () => import('@/views/contractCheck/checkDectorRecords.vue'),
+            component: () => import('@/views/contractCheck/oyenet.vue'),
             name: 'oyenet检测台',
             meta: { title: 'oyenet检测台', keepAlive: true , icon: 'MenuIcon'}
         },
         {
             path: '/contractdetector/checkDectorRecords',
-            component: () => import('@/views/contractCheck/smartfast.vue'),
+            component: () => import('@/views/contractCheck/oyenetRecords.vue'),
             name: '合约检测记录查询',
             meta: { title: '合约检测记录查询', keepAlive: true , icon: 'School'}
         },

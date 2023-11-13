@@ -55,11 +55,12 @@
     type="primary" 
     @click="uploadFiles" 
     v-if="selectedFiles.length > 0">
-    上传
+    检测
 </el-button>
 <el-button 
-    @click="cancelFiles" 
-    v-if="selectedFiles.length > 0">
+class="cancelButton"    
+@click="cancelFiles" 
+    v-if="selectedFiles.length > 0" >
     取消
 </el-button>
 
@@ -67,7 +68,7 @@
       <div class="search">
         <input type="file" ref="fileInput" @change="handleFileChange" accept=".pcap" multiple style="display: none;">
         <el-button type="primary" @click="triggerFileInput" v-if="showButton">上传pcap流量包</el-button>
-        <el-button type="primary" @click="onSubmit" :icon="Search">查询</el-button>
+        <!-- <el-button type="primary" @click="onSubmit" :icon="Search">查询</el-button> -->
         <el-button @click="reset(ruleFormRef)">重置</el-button>
         <el-button link type="primary" @click="isExpand = !isExpand"
           >{{ isExpand ? '合并' : ''
@@ -309,6 +310,14 @@ const cancelFiles = () => {
   }
 </script>
 <style scoped lang="scss">
+.cancelButton{
+  margin-right: 2%;
+}
+  ul{
+    margin-right: 5%;
+    position: relative;
+    top: -5px;
+  }
   .edit-input {
     padding-right: 100px;
   }
