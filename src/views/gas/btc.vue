@@ -172,6 +172,7 @@
 .title{
   font-weight: bolder;
   font-size: 30px;
+  color: #333333;
 }
 .rectangle span {
   font-size: 40px;
