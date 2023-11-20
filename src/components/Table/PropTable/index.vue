@@ -3,9 +3,9 @@
     <div class="header">
       <el-form :inline="true" class="search-form" :model="formInline" ref="ruleFormRef">
         <template v-for="(item, index) in formSearchData" :key="index">
-          <el-form-item :label="item.label" v-show="isExpand ? isExpand : index < 1">
-            <template v-if="item.valueType === 'input'">
-              <el-input v-model="formInline[item.name]" :placeholder="`请输入${item.label}`" />
+          <el-form-item class="elformcss" :label="item.label" v-show="isExpand ? isExpand : index < 1">
+            <template v-if="item.valueType === 'input'" >
+              <!-- <el-input class="inputsearch" v-model="formInline[item.name]" :placeholder="`请输入${item.label}`" /> -->
             </template>
             <template v-if="item.valueType === 'link'">
               <a :href="formInline[item.name]" target="_blank">{{ item.label }}</a>
@@ -69,7 +69,7 @@ class="cancelButton"
         <input type="file" ref="fileInput" @change="handleFileChange" accept=".pcap" multiple style="display: none;">
         <el-button type="primary" @click="triggerFileInput" v-if="showButton">上传pcap流量包</el-button>
         <!-- <el-button type="primary" @click="onSubmit" :icon="Search">查询</el-button> -->
-        <el-button @click="reset(ruleFormRef)">重置</el-button>
+        <el-button @click="refreshPage">更新</el-button>
         <el-button link type="primary" @click="isExpand = !isExpand"
           >{{ isExpand ? '合并' : ''
           }}</el-button>
@@ -83,7 +83,7 @@ class="cancelButton"
       </div>
       <!-- ------------表格--------------->
       <!-- ------------表格--------------->
-<div class="table">
+      <div class="table">
   <el-table
     class="zb-table"
     v-loading="loading"
@@ -92,49 +92,62 @@ class="cancelButton"
     :border="true"
   >
     <template v-for="item in columns">
+      <!-- 处理链接类型的列 -->
       <el-table-column
         v-if="item.type === 'link'"
         :prop="item.name"
-        :width="item.width"
-        :align="item.align != null ? item.align : 'center'"
-        :fixed="item.fixed"
         :label="item.label"
+        :width="item.width"
+        :align="item.align ? item.align : 'center'"
+        :fixed="item.fixed"
       >
         <template #default="scope">
-          <a :href="scope.row[item.name]" >{{ scope.row[item.name] }}</a>
+          <a :href="scope.row[item.name]">{{ scope.row[item.name] }}</a>
         </template>
       </el-table-column>
+
+      <!-- 处理ID列和sessionName列 -->
       <el-table-column
-        v-else-if="item.type"
-        :type="item.type"
-        :width="item.width"
-        :align="item.align != null ? item.align : 'center'"
-        :fixed="item.fixed"
+        v-else-if="item.name === 'id' || item.name === 'sessionName'"
+        :prop="item.name"
         :label="item.label"
-      />
+        :width="item.width"
+        :align="item.align ? item.align : 'center'"
+        :fixed="item.fixed"
+      >
+        <template #default="scope">
+          <span 
+            @click="handleCellClick(item.name, scope.row[item.name], scope.row)"
+            style="font-weight: bold; color: blue; cursor: pointer;">
+            {{ scope.row[item.name] }}
+          </span>
+        </template>
+      </el-table-column>
+
+      <!-- 处理其他类型的列 -->
       <el-table-column
         v-else
         :prop="item.name"
-        :width="item.width"
-        :align="item.align != null ? item.align : 'center'"
-        :fixed="item.fixed"
         :label="item.label"
+        :width="item.width"
+        :align="item.align ? item.align : 'center'"
+        :fixed="item.fixed"
       >
         <template #default="scope">
-          <span v-if="!item.slot" @click="handleCellClick(scope.row[item.name], scope.row)">{{ scope.row[item.name] }}</span>
-          <slot v-else :name="item.name" :item="item" :row="scope.row"></slot>
-          
+          {{ scope.row[item.name] }}
         </template>
       </el-table-column>
     </template>
   </el-table>
 </div>
 
+
       <!-- ------------分页--------------->
       <div class="pagination">
         <el-pagination
           v-model:currentPage="currentPage1"
           :page-sizes="[20, 30, 40, 50, 100]"
+          :page-size="pageSize"
           background
           layout="total, sizes, prev, pager, next, jumper"
           :total="props.data.length"
@@ -201,12 +214,16 @@ class="cancelButton"
   const uploadedFiles = ref([]);
   const showFileDialog = ref(false);
 
-  const handleCellClick = (value, row) => {
-    console.log('Clicked value:', value);
-    // console.log('Entire row data:', row);
-    emit('handleCellClick',value,row)
-    // 这里您可以进行更多操作，例如触发事件，展示模态窗口等
+  const handleCellClick = (column, value, row) => {
+    console.log('Clicked column:', column, 'value:', value);
+    // 确认点击的是ID列
+    if (column === 'id') {
+        emit('handleCellClick', value, row);
+    }else if (column === 'sessionName') {
+        emit('handleCellClick', value, row);
+    }
 }
+
 
   const uploadFiles = () => {
     upload(selectedFiles.value); 
@@ -214,6 +231,9 @@ class="cancelButton"
     fileInput.value.value = ''; // 清空文件输入的值
 };
 
+const refreshPage = () =>{
+  window.location.reload();
+}
 const cancelFiles = () => {
     selectedFiles.value = [];
     fileInput.value.value = ''; // 清空文件输入的值
@@ -310,6 +330,12 @@ const cancelFiles = () => {
   }
 </script>
 <style scoped lang="scss">
+.elformcss{
+  opacity: 0;
+}
+.inputsearch{
+  // display: none;
+}
 .cancelButton{
   margin-right: 2%;
 }

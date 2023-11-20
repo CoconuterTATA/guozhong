@@ -10,19 +10,12 @@
           @onSubmit="onSubmit"
           @handleCellClick="handleCellClick"
       >
-        <template v-slot:btn>
-          <div style="display: flex; justify-content: flex-end">
-           
-          </div>
-        </template>
-        <template v-slot:sex="scope">{{ scope.row.sex ? '男' : '女' }}</template>
-        <template v-slot:operation="scope">
-        </template>
-        <template v-slot:reportLink="scope">
-          {{ scope.row.reportLink }}
-    <a :href="scope.row.reportLink" target="_blank">查看报告</a>
-</template>
       </PropTable>
+      <el-button 
+      @click="goBack" 
+      class="back-button">
+      返回
+    </el-button>
   </div>
   
   </template>
@@ -52,7 +45,7 @@
     price: null,
   })
   
-
+  const originalList = ref([]);  // 用于保存原始列表的状态
   const dialogVisible = ref(false)
   const title = ref('新增')
   const rowObj = ref({})
@@ -83,6 +76,16 @@
   }
   
 
+  const goBack = () => {
+  list.value = originalList.value;  
+  column.value = [
+    { name: 'id', label: 'ID', inSearch: true, valueType: 'input', width: 100 },
+    { name: 'trafficFileName', label: '流量文件名', inSearch: true, valueType: 'input', width: 180 },
+    { name: 'createdTime', label: '创建时间', sorter: true, inSearch: true, valueType: 'input', width: 180 },
+    { name: 'sessionNum', label: '会话数量', sorter: true, inSearch: true, valueType: 'input', width: 120 },
+    { name: 'path', label: '存储路径', inSearch: true, valueType: 'input' },
+  ];
+};
 
   const edit = (row) => {
     title.value = '编辑'
@@ -162,7 +165,6 @@
   const handleCellClick = async (value, row) => {
   console.log('Static Selected value changed to:', value);
   console.log('Static row:', row);
-
   // 根据 row 的属性来决定要执行的操作
   if ('sessionName' in row) {   // 使用 'in' 来检查属性是否存在
     fetchDetailsBySessionId(value);
@@ -225,6 +227,7 @@ axios.post(`http://42.194.184.32:8080/pcap/listSessionByTrafficId?traffic_id=${p
           .then(response => {
             data.value = response.data;
             loading.value = false; // 数据加载完成后隐藏加载动画
+            originalList.value = response.data; 
             // console.log(data.value)
             console.log('获取到的数据:', response.data);
             list.value = response.data;
@@ -241,10 +244,20 @@ axios.post(`http://42.194.184.32:8080/pcap/listSessionByTrafficId?traffic_id=${p
   </script>
   
   <style scoped>
+.back-button {
+  position: absolute;
+  top: 3%;     /* 控制按钮距离顶部的距离 */
+  right: 6%;   /* 控制按钮距离右侧的距离 */
+  color: white;
+  background-color: #409EFF;
+  border-color: #409EFF;
+}
+
   .edit-input {
     padding-right: 100px;
   }
   .app-container{
+    position: relative;
     flex: 1;
     display: flex;
     width: 100%;

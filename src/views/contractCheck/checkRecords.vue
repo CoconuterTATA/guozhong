@@ -1,5 +1,15 @@
 <template>
-    <div class="app-container" ref="appContainer">
+    <div class="app-container" v-if="!loading" ref="appContainer">
+      <div class="inputs">
+    <div class="input-group">
+      <span class="input-label">合约名：</span>
+      <el-input v-model="contractName"></el-input>
+    </div>
+    <div class="input-group">
+      <span class="input-label">合约版本：</span>
+      <el-input v-model="contractVersion"></el-input>
+    </div>
+    </div>
       <PropTable
           :loading="loading"
           @selection-change="selectionChange"
@@ -10,7 +20,6 @@
       >
         <template v-slot:btn>
           <div style="display: flex; justify-content: flex-end">
-           
           </div>
         </template>
         <template v-slot:sex="scope">{{ scope.row.sex ? '男' : '女' }}</template>
@@ -25,7 +34,7 @@
   </template>
   <script lang="ts" setup name="comprehensive">
   import axios from 'axios';
-  import {ref, reactive, onMounted, nextTick} from 'vue'
+  import {ref, reactive, onMounted, nextTick, watch} from 'vue'
   import * as dayjs from 'dayjs'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import type { FormInstance } from 'element-plus'
@@ -39,23 +48,6 @@
   import PropTable from '@/components/Table/PropTable/index.vue'
   // const data = []
   const data = ref([]); 
-
-//   for (let i = 0; i < 100; i++) {
-//     data.push({
-//       date: '2016-05-02',
-//       name: '王五' + i,
-//       price: 1 + i,
-//       province: '上海',
-//       admin: 'admin',
-//       sex: i % 2 ? 1 : 0,
-//       checked: true,
-//       id: i + 1,
-//       age: 0,
-//       city: '普陀区',
-//       address: '上海市普上海',
-//       zip: 200333,
-//     })
-//   }
   const list = ref(data)
   
   const formSize = ref('default')
@@ -66,7 +58,8 @@
     price: null,
   })
   
-
+  const contractName = ref('');
+  const contractVersion = ref('');
   const dialogVisible = ref(false)
   const title = ref('新增')
   const rowObj = ref({})
@@ -187,9 +180,61 @@
       loading.value = false
     }, 500)
   })
+  watch([contractName, contractVersion], () => {
+  // 当输入框的内容发生变化时，执行查询
+  performQuery();
+});
+
+const performQuery = () => {
+  // 执行查询逻辑，可能是过滤list或获取新数据
+  // 例如，过滤list中的项目
+  list.value = data.value.filter(item => {
+    return item.contractName.includes(contractName.value) && item.contractVersion.includes(contractVersion.value);
+  });
+}
+
   </script>
   
   <style scoped>
+  .el-input__wrapper {
+  border: none; /* 如果要去掉边框 */
+  padding: 0; /* 如果要调整内边距 */
+  /* 其他需要调整的样式 */
+}
+
+.input-group .el-input {
+  width: 40%; /* 输入框将占据其父元素的全部宽度 */
+}
+
+.inputs {
+  display: flex;
+  justify-content: space-between; /* 确保输入组之间有一些间隔 */
+  position: relative;
+  top: 4.9%;
+  left: 2%;
+  width: 80%;
+}
+
+.input-group {
+  /* padding-top: 10px; 增加上内边距 */
+  /* padding-bottom: 10px; 增加下内边距 */
+  
+  display: flex;
+  align-items: center;
+  flex: 1; /* 使所有输入组具有相同的宽度 */
+  margin-right: -20%; /* 如果需要，可以在输入组之间添加一些间距 */
+}
+
+.input-label {
+  margin-right: 10px; /* 标签与输入框之间的间距 */
+}
+
+
+/* 最后一个输入组不需要右边距 */
+.inputs .input-group:last-child {
+  margin-right: 20%;
+}
+
   .edit-input {
     padding-right: 100px;
   }

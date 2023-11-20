@@ -19,8 +19,8 @@ const contractCheck = [{
         {
             path: '/contractCheck/smartfastRecords',
             component: () => import('@/views/contractCheck/checkRecords.vue'),
-            name: '合约检测记录',
-            meta: { title: '合约检测记录', keepAlive: true , icon: 'MenuIcon'}
+            name: 'SmartFast合约检测记录',
+            meta: { title: '合约检测记录查询', keepAlive: true , icon: 'School'}
         },
     ]
 }]

@@ -6,20 +6,20 @@ const contractDetector = [{
     redirect: '/contractdetector/detector',
     name: 'contractDetector',
     meta: {
-        title: 'oyenet合约检测',
+        title: 'Oyente合约检测',
         icon: 'MenuIcon'
     },
     children: [
         {
             path: '/contractdetector/detector',
             component: () => import('@/views/contractCheck/oyenet.vue'),
-            name: 'oyenet检测台',
-            meta: { title: 'oyenet检测台', keepAlive: true , icon: 'MenuIcon'}
+            name: 'Oyente检测台',
+            meta: { title: 'Oyente检测台', keepAlive: true , icon: 'MenuIcon'}
         },
         {
             path: '/contractdetector/checkDectorRecords',
             component: () => import('@/views/contractCheck/oyenetRecords.vue'),
-            name: '合约检测记录查询',
+            name: 'Oyente合约检测记录查询',
             meta: { title: '合约检测记录查询', keepAlive: true , icon: 'School'}
         },
     ]

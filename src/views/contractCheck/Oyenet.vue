@@ -62,9 +62,9 @@
           </div>
           <div class="contractInfo">
             <h2>合约基本信息</h2>
-            <p>合约类型: <span class="right-aligned">{{ contract_type || '无' }}</span></p>
-            <p>合约版本: <span class="right-aligned">{{ selectedVersion }}</span></p>
-            <p>EVM代码覆盖率: <div class="text-right"><span class="evm_converge-box">{{ evm_code_coverage ? evm_code_coverage + '%' : '无' }}</span></div></p>
+            <p class="flex-container">合约类型: <span class="right-aligned">{{ contract_type || '无' }}</span></p>
+            <p class="flex-container">合约版本: <span class="right-aligned">{{ selectedVersion }}</span></p>
+            <p class="flex-container">EVM代码覆盖率: <span class="evm_converge-box">{{ evm_code_coverage ? evm_code_coverage + '%' : '无' }}</span></p>
           </div>
             <h2>漏洞统计</h2>
             <div class="vulnerability">
@@ -128,8 +128,8 @@ const closeModal = () => {
 isModalVisible.value = false;
 };
 const submitCode = async () => {
-  isLoading.value = true;
   isModalVisible.value = true;
+  isLoading.value = true;
   console.log(isModalVisible.value)
 
 try {
@@ -176,6 +176,18 @@ isLoading.value = false;  // 隐藏加载动画
 
 <!--样式-->
 <style lang="scss" scoped>
+.flex-container {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center; /* 确保垂直居中 */
+  white-space: nowrap;
+}
+
+.right-aligned, .evm_converge-box {
+  /* 你可以保留原来的样式，或者根据需要调整 */
+}
+
 .right-aligned{
   display: inline-block;
   width: 96%;
@@ -307,11 +319,12 @@ isLoading.value = false;  // 隐藏加载动画
   margin-bottom: 15px;  /* 控制横线之间的间隔 */
   padding-bottom: 15px;  /* 控制文字到横线的距离 */
 }
-.text-right{
-  display: block;
+.text-right {
+  display: inline-block; /* 或inline */
+  width: 96%; /* 根据需要调整 */
   text-align: right;
-  width: 96%;
 }
+
 .evm_converge-box {
   display: inline-block; /* 使框的大小适应文字内容 */
   padding: 2px; /* 控制文本与边框之间的间距 */
