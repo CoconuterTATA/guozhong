@@ -18,17 +18,6 @@
           @reset="reset"
           @onSubmit="onSubmit"
       >
-        <template v-slot:btn>
-          <div style="display: flex; justify-content: flex-end">
-          </div>
-        </template>
-        <template v-slot:sex="scope">{{ scope.row.sex ? '男' : '女' }}</template>
-        <template v-slot:operation="scope">
-        </template>
-        <template v-slot:reportLink="scope">
-          {{ scope.row.reportLink }}
-    <a :href="scope.row.reportLink" target="_blank">查看报告</a>
-</template>
       </PropTable>
     </div>
   </template>
@@ -42,7 +31,7 @@
     id: null,
     solcVersion: null,
   })
-
+  const originalData = ref([]);
   const loading = ref(true)
   const appContainer = ref(null)
   import PropTable from '@/components/Table/PropTable/index.vue'
@@ -167,6 +156,7 @@
           .then(response => {
             data.value = response.data;
             loading.value = false; // 数据加载完成后隐藏加载动画
+            originalData.value = response.data;
             // console.log(data.value)
             console.log('获取到的数据:', response.data);
             list.value = response.data;
@@ -184,14 +174,13 @@
   // 当输入框的内容发生变化时，执行查询
   performQuery();
 });
-
 const performQuery = () => {
-  // 执行查询逻辑，可能是过滤list或获取新数据
-  // 例如，过滤list中的项目
-  list.value = data.value.filter(item => {
-    return item.contractName.includes(contractName.value) && item.contractVersion.includes(contractVersion.value);
+  list.value = originalData.value.filter(item => {
+    const contractNameValue = item.contractName || '';
+    const contractVersionValue = item.solcVersion || '';
+    return contractNameValue.includes(contractName.value) && contractVersionValue.includes(contractVersion.value);
   });
-}
+};
 
   </script>
 
@@ -210,7 +199,7 @@ const performQuery = () => {
   display: flex;
   justify-content: space-between; /* 确保输入组之间有一些间隔 */
   position: relative;
-  top: 4.9%;
+  top: 4.4%;
   left: 2%;
   width: 80%;
 }

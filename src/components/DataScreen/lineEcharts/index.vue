@@ -6,6 +6,7 @@ import BarCharts from './components/bar.vue'
 import * as echarts from 'echarts'
 import { EChartsType } from 'echarts/core'
 import { onMounted, ref,reactive } from 'vue'
+import axios from "axios";
 const chartsRef = ref<HTMLElement | null>()
 
 
@@ -26,7 +27,7 @@ const options = {
       const tipHtml = `
                      <div class="m-info" style=" opacity: 0.95;font-size: 12px; color: white;" >
                          <div class="title" ></div>
-                         <div class="title" >完成占比${name[0].data}</div>
+                         <div class="title" >当日合约检测量${name[0].data}</div>
                  </div>`
       return tipHtml
     },
@@ -55,7 +56,7 @@ const options = {
       },
     },
     type: 'category',
-    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+    data: [], // 待接口返回数据
     axisLabel: {
       // 设置坐标轴的 文字样式
       color: '#bbdaff',
@@ -69,7 +70,7 @@ const options = {
   },
   series: [
     {
-      data: [154, 230, 224, 218, 135, 147, 260],
+      data: [], // 待接口返回数据
       type: 'line',
       // smooth:false,   //关键点，为true是不支持虚线的，实线就用true
       symbolSize: 12, // 拐点圆的大小
@@ -102,6 +103,24 @@ onMounted(() => {
   chart = initChart()
   window.addEventListener('resize', function () {
     chart && chart.resize()
+  })
+  // 使用axios请求接口获取数据
+  axios.get('http://42.194.184.32:8080/smartfast/getRecent7dayContracts')
+      .then((res) => {
+    // 将返回的数据转换为数组格式
+      const data = res.data
+      const keys = Object.keys(data)
+      const values = Object.values(data)
+        chart.setOption({
+          xAxis: {
+            data: keys,
+          },
+          series: [
+            {
+              data: values,
+            },
+          ],
+        })
   })
 })
 </script>

@@ -10,7 +10,7 @@
         <el-option label="ETH" value="ETH"></el-option>
         <el-option label="BTC" value="BTC"></el-option>
     </el-select>
-      <p class="title">BTC Gas Price (sat/vB)</p>
+      <p class="title">ETH Gas Price (sat/vB)</p>
       <p class="subtitle">最新实时报价</p>
       <p class="subtitle">{{ currentTime }}</p>
       <p class="bitcoinPrice">{{ bitcoinPrice }}</p>
@@ -60,8 +60,8 @@
       };
     },
     mounted() {
-      this.fetchGasData();
       this.setSelectedOptionBasedOnRoute();
+      this.fetchGasData();
     },
     watch: {
     '$route'(newRoute) {
@@ -70,7 +70,7 @@
     },
 
     methods:{
-      setSelectedOptionBasedOnRoute() {
+    setSelectedOptionBasedOnRoute() {
     const path = this.$route.path;
     if (path.includes('/gasRealTime/eth')) {
       this.selected = 'ETH';

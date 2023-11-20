@@ -10,18 +10,6 @@
           @onSubmit="onSubmit"
           
       >
-        <template v-slot:btn>
-          <div style="display: flex; justify-content: flex-end">
-           
-          </div>
-        </template>
-        <template v-slot:sex="scope">{{ scope.row.sex ? '男' : '女' }}</template>
-        <template v-slot:operation="scope">
-        </template>
-        <template v-slot:reportLink="scope">
-          {{ scope.row.reportLink }}
-    <a :href="scope.row.reportLink" target="_blank">查看报告</a>
-</template>
       </PropTable>
   </div>
   
@@ -133,11 +121,6 @@
 
       return match;
     });
-
-
-
-
-
     // 更新list，即表格的显示数据
     list.value = filteredData;
 }

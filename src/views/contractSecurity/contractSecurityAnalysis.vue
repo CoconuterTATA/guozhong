@@ -3,11 +3,11 @@
     <img :src="imageUrl" alt="Image" class="center-image">
     <h2 class="title">服务舱合约安全分析</h2>
     <div class="dropdown">
-    <select>
-      <option value="ETH">ETH</option>
-      <option value="BTC">BTC</option>
-      <option value="Optimism">Optimism</option>
-    </select>
+      <select v-model="selectedOption">
+        <option value="ETH">ETH</option>
+        <option value="BTC">BTC</option>
+        <option value="Optimism">Optimism</option>
+      </select>
     </div>
     <div class="input-group">
       <input 
@@ -247,6 +247,7 @@ export default {
     isModalOpen: false,
     activeTab: 'result',
     isLoading: false,
+    selectedOption: 'ETH', 
     };
   },
   methods: {
@@ -254,21 +255,23 @@ export default {
       this.tokenAddress = '';
     },
     executeSearch() {
-      this.isLoading = false;
-      this.isModalOpen = true;
-      axios.post('http://42.194.184.32:8080/smartFast/EthAudit', {
-        address: this.tokenAddress // 确保发送正确的参数
-      })
-      .then(response => {
-        this.tokenData = response.data; // 假设返回的数据结构与你的tokenData对象匹配
-        this.isModalOpen = true;
-      })
-      .catch(error => {
-        console.error('请求错误:', error);
-      })
-      .finally(() => {
-        this.isLoading = false;
-      });
+      this.isLoading = true;
+      const url = this.selectedOption === 'ETH'
+        ? 'http://42.194.184.32:8080/smartFast/EthAudit'
+        : 'http://42.194.184.32:8080/smartFast/BscAudit';
+
+      axios.post(url, { address: this.tokenAddress })
+        .then(response => {
+          this.tokenData = response.data;
+          this.isModalOpen = true;
+        })
+        .catch(error => {
+          // this.isModalOpen = true; //调试用
+          console.error('请求错误:', error);
+        })
+        .finally(() => {
+          this.isLoading = false;
+        });
     },
     checkInput() {
       // 检查输入

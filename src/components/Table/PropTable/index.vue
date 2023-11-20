@@ -48,7 +48,7 @@
     当前监控节点数：{{ nodeCount }}
 </span>
 
-<ul v-if="selectedFiles.length > 0">
+<ul class="ul-css" v-if="selectedFiles.length > 0">
     <li v-for="file in selectedFiles" :key="file.name">{{ file.name }}</li>
 </ul>
 <el-button 
@@ -330,6 +330,9 @@ const cancelFiles = () => {
   }
 </script>
 <style scoped lang="scss">
+.ul-css{
+  position: relative;
+}
 .elformcss{
   opacity: 0;
 }
