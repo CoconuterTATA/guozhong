@@ -47,9 +47,9 @@
   const appContainer = ref(null)
   import PropTable from '@/components/Table/PropTable/index.vue'
   // const data = []
-  const data = ref([]); 
+  const data = ref([]);
   const list = ref(data)
-  
+
   const formSize = ref('default')
   const ruleFormRef = ref<FormInstance>()
   const ruleForm = reactive({
@@ -68,7 +68,7 @@
     title.value = '新增'
     dialogVisible.value = true
   }
-  
+
   const batchDelete = () => {
     if (!selectObj.value.length) {
       return ElMessage.error('未选中任何行')
@@ -88,7 +88,7 @@
   const selectionChange = (val) => {
     selectObj.value = val
   }
-  
+
   const edit = (row) => {
     title.value = '编辑'
     rowObj.value = row
@@ -97,7 +97,7 @@
     ruleForm.sex = row.sex
     ruleForm.price = row.price
   }
-  
+
   const del = (row) => {
     console.log('row==', row)
     ElMessageBox.confirm('你确定要删除当前项吗?', '温馨提示', {
@@ -116,7 +116,7 @@
         })
         .catch(() => {})
   }
-  
+
   const reset = () => {
     loading.value = true
     setTimeout(() => {
@@ -124,7 +124,7 @@
     }, 500)
     ElMessage.success('触发重置方法')
   }
-  
+
   const onSubmit = (val) => {
     console.log('val===', val);
     ElMessage.success('触发查询方法');
@@ -132,7 +132,7 @@
     // 使用筛选功能筛选表格数据
     let filteredData = data.value.filter(item => {
       let match = true;
-      
+
       // 对每一个查询参数进行检查
       if (val.id && Number(item.id) !== Number(val.id)) match = false;
       if (val.solcVersion && item.solcVersion !== val.solcVersion) match = false;
@@ -146,9 +146,9 @@
 }
 
 
-  
+
   const getHeight = ()=>{
-  
+
   }
   const column = [
     { type: 'selection', width: 60 ,fixed: 'left'},
@@ -163,7 +163,7 @@
     nextTick(()=>{
       // let data = appContainer.value.
        // 在nextTick中获取数据，以确保在视图更新后执行
-       axios.get('http://42.194.184.32:8080/record')
+       axios.get('http://42.194.184.32:8080/record/listAuditRecord')
           .then(response => {
             data.value = response.data;
             loading.value = false; // 数据加载完成后隐藏加载动画
@@ -194,7 +194,7 @@ const performQuery = () => {
 }
 
   </script>
-  
+
   <style scoped>
   .el-input__wrapper {
   border: none; /* 如果要去掉边框 */
@@ -252,4 +252,3 @@ const performQuery = () => {
     top: 10px;
   }
   </style>
-  

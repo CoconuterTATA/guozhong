@@ -17,7 +17,7 @@
       返回
     </el-button>
   </div>
-  
+
   </template>
   <script lang="ts" setup name="comprehensive">
   import axios from 'axios';
@@ -34,9 +34,9 @@
   const appContainer = ref(null)
   import PropTable from '@/components/Table/PropTable/index.vue'
   // const data = []
-  const data = ref([]); 
+  const data = ref([]);
   const list = ref(data)
-  
+
   const formSize = ref('default')
   const ruleFormRef = ref<FormInstance>()
   const ruleForm = reactive({
@@ -54,7 +54,7 @@
     title.value = '新增'
     dialogVisible.value = true
   }
-  
+
   const batchDelete = () => {
     if (!selectObj.value.length) {
       return ElMessage.error('未选中任何行')
@@ -74,7 +74,7 @@
   const selectionChange = (val) => {
     selectObj.value = val
   }
-  
+
 
   const goBack = () => {
   list.value = originalList.value;  
@@ -95,7 +95,7 @@
     ruleForm.sex = row.sex
     ruleForm.price = row.price
   }
-  
+
   const del = (row) => {
     console.log('row==', row)
     ElMessageBox.confirm('你确定要删除当前项吗?', '温馨提示', {
@@ -114,7 +114,7 @@
         })
         .catch(() => {})
   }
-  
+
   const reset = () => {
     loading.value = true
     setTimeout(() => {
@@ -122,7 +122,7 @@
     }, 500)
     ElMessage.success('触发重置方法')
   }
-  
+
   const onSubmit = (val) => {
     console.log('val===', val);
     ElMessage.success('触发查询方法');
@@ -130,7 +130,7 @@
     // 使用筛选功能筛选表格数据
     let filteredData = data.value.filter(item => {
       let match = true;
-      
+
       // 对每一个查询参数进行检查
       if (val.id && Number(item.id) !== Number(val.id)) match = false;
       if (val.solcVersion && item.solcVersion !== val.solcVersion) match = false;
@@ -148,9 +148,9 @@
 }
 
 
-  
+
   const getHeight = ()=>{
-  
+
   }
   const column = ref([
     // { type: 'selection', width: 60 ,fixed: 'left'},
@@ -175,12 +175,12 @@
 
 const fetchDetailsBySessionId = (sessionId) => {
   // 更新表结构为会话详情
-  column.value = [ 
+  column.value = [
     // ... 你的会话详情结构
   ];
-  
+
   loading.value = true; // 开启加载动画
-  axios.post(`http://42.194.184.32:8080/pcap/listPacketsBySessionld`, { session_id: sessionId })
+  axios.post(`http://42.194.184.32:8080/pcap/listPacketsBySessionld?session_id=${sessionId}`)
     .then(response => {
       console.error('根据会话Name获取详情成功');
       console.log(response.data);
@@ -242,7 +242,7 @@ axios.post(`http://42.194.184.32:8080/pcap/listSessionByTrafficId?traffic_id=${p
     }, 500)
   })
   </script>
-  
+
   <style scoped>
 .back-button {
   position: absolute;
@@ -271,4 +271,3 @@ axios.post(`http://42.194.184.32:8080/pcap/listSessionByTrafficId?traffic_id=${p
     top: 10px;
   }
   </style>
-  
