@@ -11,8 +11,8 @@
           @handleCellClick="handleCellClick"
       >
       </PropTable>
-      <el-button 
-      @click="goBack" 
+      <el-button
+      @click="goBack"
       class="back-button">
       返回
     </el-button>
@@ -44,7 +44,7 @@
     sex: null,
     price: null,
   })
-  
+
   const originalList = ref([]);  // 用于保存原始列表的状态
   const dialogVisible = ref(false)
   const title = ref('新增')
@@ -77,7 +77,7 @@
 
 
   const goBack = () => {
-  list.value = originalList.value;  
+  list.value = originalList.value;
   column.value = [
     { name: 'id', label: 'ID', inSearch: true, valueType: 'input', width: 100 },
     { name: 'trafficFileName', label: '流量文件名', inSearch: true, valueType: 'input', width: 180 },
@@ -178,9 +178,11 @@ const fetchDetailsBySessionId = (sessionId) => {
   column.value = [
     // ... 你的会话详情结构
   ];
-
+  const params = new URLSearchParams();
+  console.log(sessionId)
+  params.append('session_id', sessionId);
   loading.value = true; // 开启加载动画
-  axios.post(`http://42.194.184.32:8080/pcap/listPacketsBySessionld?session_id=${sessionId}`)
+  axios.post(`http://42.194.184.32:8080/pcap/listPacketsBySessionld`, params)
     .then(response => {
       console.error('根据会话Name获取详情成功');
       console.log(response.data);
@@ -227,7 +229,7 @@ axios.post(`http://42.194.184.32:8080/pcap/listSessionByTrafficId?traffic_id=${p
           .then(response => {
             data.value = response.data;
             loading.value = false; // 数据加载完成后隐藏加载动画
-            originalList.value = response.data; 
+            originalList.value = response.data;
             // console.log(data.value)
             console.log('获取到的数据:', response.data);
             list.value = response.data;

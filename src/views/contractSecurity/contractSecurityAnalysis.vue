@@ -1,3 +1,4 @@
+<!--suppress JSUnusedGlobalSymbols -->
 <template>
   <div class="container">
     <img :src="imageUrl" alt="Image" class="center-image">
@@ -10,218 +11,146 @@
       </select>
     </div>
     <div class="input-group">
-      <input 
-        type="text" 
+      <input
+        type="text"
         v-model="tokenAddress"
         placeholder="请输入要分析的Token地址"
-        @input="checkInput"
-      >
-      <span class="clearIcon" v-if="tokenAddress" @click="clearInput">&#x2715;</span>
+        @input="checkInput">
       <span class="searchIcon" @click="executeSearch">&#x1F50D;</span>
+<!--      <span class="clearIcon" v-if="tokenAddress" @click="clearInput">&#x2715;</span>-->
     </div>
   </div>
   <div class="loading" v-if="isLoading">
       <!-- 加载状态元素，例如加载图标 -->
       <div class="loaderSecur"></div>
   </div>
+
+
+<!--  模态框背景内容-->
   <div v-if="isModalOpen" class="modal-overlay">
+<!--    模态框主体-->
   <div class="modal">
-    <span class="close-button" @click="closeModal">&#x2190;</span> <!-- 返回按钮 -->
-    <img :src="imageUrl" alt="Image" class="modal-image">
+    <span class="closeButton" @click="closeModal">&times;</span> <!-- 返回按钮 -->
+<!--    模态框标签栏-->
     <div class="tabs">
       <span class="tab" :class="{ active: activeTab === 'result' }" @click="activeTab = 'result'">Result</span>
       <span class="tab" :class="{ active: activeTab === 'code' }" @click="activeTab = 'code'">Code</span>
       <span class="tab" :class="{ active: activeTab === 'abi' }" @click="activeTab = 'abi'">Abi</span>
     </div>
+
+<!--    模态框结果内容-->
     <div class="tab-content">
-      <div v-if="activeTab === 'result'">
-        <!-- Result内容 -->
-        <section class="info-section">
-        <h3>合约信息</h3>
-        <hr>
-        <p>id: <span class="value">{{ tokenData.id || '无' }}</span></p>
-        <hr>
-        <p>编译器版本:<span class="value">{{ tokenData.compilerVersion || '无' }}</span></p>
-        <hr>
-        <p>合约名: <span class="value">{{ tokenData.contractName || '无' }}</span></p>
-        <hr>
-        <p>合约地址: <span class="contractAddress">{{ tokenData.contractAddress || '12312312' }}</span></p>
-        <hr>
-        <p>合约创建者: <span class="value">{{ tokenData.contractCreator || '无' }}</span></p>
-        <hr>
-        <p>合约哈希: <span class="value">{{ tokenData.createTxHash || '无' }}</span></p>
-        <hr>
-        <p>检测报告链接: <span class="contractAddress">{{ tokenData.reportLink || '无' }}</span></p>
-        <hr>
-        <p>合约是否开源: 
-        <span class="value">
-          <template v-if="tokenData.token">
-            {{ tokenData.token }}
-          </template>
-          <template v-else>
-            <span class="closeSource">合约未开源<span class="no-data-icon"></span></span>
-          </template>
-        </span>
-      </p>
-        <hr>
-        <!-- 相关信息展示，例如Token、Symbol等 -->
-      </section>
-      <section class="risk-analysis">
-        <h3>检测结果</h3>
-        <hr>
-        <!-- 相关信息展示，例如买入费率、卖出费率等 -->
-        <!-- <p>买入费率: <span class="security">{{ tokenData.token || '0%' }}</span></p>
-        <hr>
-        <p>卖出费率: <span class="security">{{ tokenData.token || '0%' }}</span></p>  <hr> -->
-        <p>高风险漏洞
-          <span :class="{ 'highLevelVulnerability': tokenData.highLevelVulnerability !== 0, 'security': !tokenData.highLevelVulnerability }">
-            <template v-if="tokenData.highLevelVulnerability">
-              {{ tokenData.highLevelVulnerability }}
-            </template>
-            <template v-else>
-              <span>无<span class="secure"></span></span>
-            </template>
-          </span>
-        </p><hr>
-        <p>中风险漏洞
-          <span :class="{ 'mediumLevelVulnerability': tokenData.mediumLevelVulnerability !== 0, 'security': !tokenData.mediumLevelVulnerability }">
-            <template v-if="tokenData.mediumLevelVulnerability">
-              {{ tokenData.mediumLevelVulnerability }}
-            </template>
-            <template v-else>
-              <span>无<span class="secure"></span></span>
-            </template>
-          </span>
-        </p><hr>
-        <p>低风险漏洞
-          <span :class="{ 'lowLevelVulnerability': tokenData.lowLevelVulnerability !== 0, 'security': !tokenData.lowLevelVulnerability }">
-            <template v-if="tokenData.lowLevelVulnerability">
-              {{ tokenData.lowLevelVulnerability }}
-            </template>
-            <template v-else>
-              <span>无<span class="secure"></span></span>
-            </template>
-          </span>
-        </p><hr>
-        <p>警告
-          <span :class="{ 'warning': tokenData.warning !== 0, 'security': !tokenData.warning }">
-            <template v-if="tokenData.warning">
-              {{ tokenData.warning }}
-            </template>
-            <template v-else>
-              <span>无<span class="secure"></span></span>
-            </template>
-          </span>
-        </p><hr>
-        <p>建议
-          <span :class="{ 'needOpt': tokenData.warning !== 0, 'security': !tokenData.warning }">
-            <template v-if="tokenData.needOpt">
-              {{ tokenData.needOpt }}
-            </template>
-            <template v-else>
-              <span>无<span class="secure"></span></span>
-            </template>
-          </span>
-        </p><hr>
-      <p>时间戳
-        <span class="value">
-          <template v-if="tokenData.timestamp">
-            {{ tokenData.timestamp }}
-          </template>
-        </span>
-      </p> <hr>
-      <p>链
-        <span class="value">
-          <template v-if="tokenData.chain">
-            {{ tokenData.chain }}
-          </template>
-        </span>
-      </p> <hr>
-      <p>可优化
-        <span class="value">
-          <template v-if="tokenData.optimizationUsed">
-            {{ tokenData.optimizationUsed }}
-          </template>
-          <template v-else>
-            <span class="security">安全<span class="secure"></span></span>
-          </template>
-        </span>
-      </p> <hr>
-      <p>runs
-        <span class="value">
-          <template v-if="tokenData.runs">
-            {{ tokenData.runs }}
-          </template>
-          <template v-else>
-            <span class="security">安全<span class="secure"></span></span>
-          </template>
-        </span>
-      </p> <hr>
-      <p>构造参数
-        <span class="value">
-          <template v-if="tokenData.constructorArguments">
-            {{ tokenData.constructorArguments }}
-          </template>
-        </span>
-      </p> <hr>
-      <p>evm版本
-        <span class="value">
-          <template v-if="tokenData.evmVersion">
-            {{ tokenData.evmVersion }}
-          </template>
-        </span>
-      </p> <hr>
-      <p>库
-        <span class="value">
-          <template v-if="tokenData.library">
-            {{ tokenData.library }}
-          </template>
-        </span>
-      </p> <hr>
-      <p>证书类型
-        <span class="value">
-          <template v-if="tokenData.licenseType">
-            {{ tokenData.licenseType }}
-          </template>
-        </span>
-      </p> <hr>
-      <p>代理
-        <span class="value">
-          <template v-if="tokenData.proxy">
-            {{ tokenData.proxy }}
-          </template>
-        </span>
-      </p> <hr>
-      <p>实施
-        <span class="value">
-          <template v-if="tokenData.implementation">
-            {{ tokenData.implementation }}
-          </template>
-        </span>
-      </p> <hr>
-      <p>swarmsource
-        <span class="value">
-          <template v-if="tokenData.swarmsource">
-            {{ tokenData.swarmsource }}
-          </template>
-        </span>
-      </p> <hr>
-      <p>标记
-        <span class="value">
-          <template v-if="tokenData.remark">
-            {{ tokenData.remark }}
-          </template>
-        </span>
-      </p> <hr>
-      </section>
+      <div class="card-icon">
+        <img :src="imageUrl" alt="iconOfFWC" id="cardImage" class="iconFWC">
+        <h1 class="front-icon">安全评测服务舱</h1>
       </div>
+
+      <div v-if="activeTab === 'result'" class="result">
+        <div class="contractInfo">
+          <h2>合约基本信息</h2>
+          <p class="flex-container">id: <span class="right-aligned">{{ tokenData.id || '无' }}</span></p>
+          <p class="flex-container">合约名: <span class="right-aligned">{{ tokenData.contractName || '无' }}</span></p>
+          <p class="flex-container">编译器版本: <span class="right-aligned">{{ tokenData.compilerVersion || '无'  }}</span></p>
+          <p class="flex-container">合约地址: <span class="evm_converge-box">{{ tokenData.contractAddress || '无' }}</span></p>
+          <p class="flex-container">合约创建者: <span class="evm_converge-box">{{ tokenData.contractCreator || '无' }}</span></p>
+          <p class="flex-container">合约哈希: <span class="evm_converge-box">{{ tokenData.createTxHash || '无' }}</span></p>
+          <p class="flex-container">时间戳: <span class="right-aligned">{{ tokenData.timestamp || '无' }}</span></p>
+          <p class="flex-container">链类型: <span class="right-aligned">{{ tokenData.chain || '无' }}</span></p>
+          <p class="flex-container">evm版本: <span class="evm_converge-box">{{ tokenData.evmVersion || '无' }}</span></p>
+          <p class="flex-container">optimizationUsed: <span class="evm_converge-box">{{ tokenData.optimizationUsed || '无' }}</span></p>
+          <p class="flex-container long-text-content">constructorArguments: <span class="evm_converge-box long-text">{{ tokenData.constructorArguments || '无' }}</span></p>
+          <p class="flex-container">runs: <span class="evm_converge-box">{{ tokenData.runs || '无' }}</span></p>
+          <p class="flex-container">library: <span class="evm_converge-box">{{ tokenData.library || '无' }}</span></p>
+          <p class="flex-container">licenseType: <span class="evm_converge-box">{{ tokenData.licenseType || '无' }}</span></p>
+          <p class="flex-container">proxy: <span class="evm_converge-box">{{ tokenData.proxy || '无' }}</span></p>
+          <p class="flex-container">implementation: <span class="evm_converge-box">{{ tokenData.implementation || '无' }}</span></p>
+          <p class="flex-container">swarmsource: <span class="evm_converge-box">{{ tokenData.swarmsource || '无' }}</span></p>
+          <p class="flex-container">remark: <span class="evm_converge-box">{{ tokenData.remark || '无' }}</span></p>
+          <p>合约是否开源:
+            <span class="value">
+              <template v-if="tokenData.openSource">
+                {{ tokenData.openSource }}
+              </template>
+              <template v-else>
+                <span class="closeSource">合约未开源<span class="no-data-icon"></span></span>
+              </template>
+            </span>
+          </p>
+        </div>
+
+        <h2>漏洞统计</h2>
+        <div class="vulnerability">
+            <p>高风险漏洞
+              <span :class="{ 'highLevelVulnerability': tokenData.highLevelVulnerability !== 0, 'security': !tokenData.highLevelVulnerability }">
+                <template v-if="tokenData.highLevelVulnerability">
+                  {{ tokenData.highLevelVulnerability }}
+                </template>
+                <template v-else>
+                  <span>无<span class="secure"></span></span>
+                </template>
+              </span>
+            </p>
+            <p>中风险漏洞
+              <span :class="{ 'mediumLevelVulnerability': tokenData.mediumLevelVulnerability !== 0, 'security': !tokenData.mediumLevelVulnerability }">
+                <template v-if="tokenData.mediumLevelVulnerability">
+                  {{ tokenData.mediumLevelVulnerability }}
+                </template>
+                <template v-else>
+                  <span>无<span class="secure"></span></span>
+                </template>
+              </span>
+            </p>
+            <p>低风险漏洞
+              <span :class="{ 'lowLevelVulnerability': tokenData.lowLevelVulnerability !== 0, 'security': !tokenData.lowLevelVulnerability }">
+                <template v-if="tokenData.lowLevelVulnerability">
+                  {{ tokenData.lowLevelVulnerability }}
+                </template>
+                <template v-else>
+                  <span>无<span class="secure"></span></span>
+                </template>
+              </span>
+            </p>
+            <p>警告
+              <span :class="{ 'warning': tokenData.warning !== 0, 'security': !tokenData.warning }">
+                <template v-if="tokenData.warning">
+                  {{ tokenData.warning }}
+                </template>
+                <template v-else>
+                  <span>无<span class="secure"></span></span>
+                </template>
+              </span>
+            </p>
+            <p>建议
+              <span :class="{ 'needOpt': tokenData.warning !== 0, 'security': !tokenData.warning }">
+                <template v-if="tokenData.needOpt">
+                  {{ tokenData.needOpt }}
+                </template>
+                <template v-else>
+                  <span>无<span class="secure"></span></span>
+                </template>
+              </span>
+            </p>
+            <p class="flex-container">检测报告链接:
+              <a :href="tokenData.reportLink" target="_blank" class="right-aligned" v-if="tokenData.reportLink">
+                {{ tokenData.reportLink }}
+              </a>
+            </p>
+          </div>
+      </div>
+
       <div v-if="activeTab === 'code'">
-        <pre>{{ tokenData.code || '无代码信息' }}</pre>
+        <h3>合约代码</h3>
+        <div class="editor-box">
+          <pre>{{ tokenData.code || '无代码信息' }}</pre>
+        </div>
+      </div>
+      <div v-if="activeTab === 'abi'">
+        <h3>合约ABI</h3>
+        <div class="editor-box">
+          <pre class="abi-container">{{ tokenData.abi }}</pre>
+        </div>
       </div>
     </div>
-    <div v-if="activeTab === 'abi'">
-      <pre>{{ tokenData.abi || '无ABI信息' }}</pre>
-      </div>
   </div>
 </div>
 
@@ -234,20 +163,20 @@ import axios from 'axios'
 export default {
   data() {
     return {
-    tokenData: {
-      highLevelVulnerability: 1,
-      lowLevelVulnerability: 2,
-      mediumLevelVulnerability: 3,
-      warning: 4,
-      needOpt: 5,
-    },
-    riskAnalysis: {},
-    imageUrl,
-    tokenAddress: '',
-    isModalOpen: false,
-    activeTab: 'result',
-    isLoading: false,
-    selectedOption: 'ETH', 
+      tokenData: {
+        highLevelVulnerability: 1,
+        lowLevelVulnerability: 2,
+        mediumLevelVulnerability: 3,
+        warning: 4,
+        needOpt: 5,
+      },
+      riskAnalysis: {},
+      imageUrl,
+      tokenAddress: '',
+      isModalOpen: false,
+      activeTab: 'result',
+      isLoading: false,
+      selectedOption: 'ETH',
     };
   },
   methods: {
@@ -259,8 +188,10 @@ export default {
       const url = this.selectedOption === 'ETH'
         ? 'http://42.194.184.32:8080/smartFast/EthAudit'
         : 'http://42.194.184.32:8080/smartFast/BscAudit';
-
-      axios.post(url, { address: this.tokenAddress })
+      console.log(this.tokenAddress)
+      const params = new URLSearchParams();
+      params.append('address', this.tokenAddress);
+      axios.post(url, params)
         .then(response => {
           this.tokenData = response.data;
           this.isModalOpen = true;
@@ -279,8 +210,7 @@ export default {
     closeModal() {
     this.isModalOpen = false; // 关闭模态框
   },
-    
-  }
+  },
 };
 </script>
 
@@ -290,8 +220,8 @@ export default {
   justify-content: center;
   align-items: center;
   position: fixed; /* 使用 fixed 定位使其相对于视口居中 */
-  top: 0%;
-  left: 0%;
+  top: 0;
+  left: 0;
   width: 100vw; /* 视口宽度 */
   height: 100vh; /* 视口高度 */
   background-color: rgba(255, 255, 255, 0.5); /* 可选：半透明背景 */
@@ -379,7 +309,7 @@ export default {
   content: '';
   position: absolute;
   left: 6px;
-  top: 0px;
+  top: 0;
   width: 8px;
   height: 14px;
   border: solid white;
@@ -409,32 +339,11 @@ export default {
 .no-data-icon::after {
   content: 'X'; /* 显示的 'X' 文字 */
 }
-.contractAddress{
-  float: right;
-  color: #4A90E2; /* 字体颜色 */
-  background-color: #F0F4F8; /* 背景颜色 */
-  border: 1px solid #D0D4D8; /* 边框颜色和大小 */
-  padding: 2px 5px; /* 内边距：垂直和水平 */
-  border-radius: 4px; /* 边框圆角 */
-}
+
 .value{
   float: right;
 }
-.modal::-webkit-scrollbar {
-  width: 10px; /* 滚动条宽度 */
-}
 
-.modal::-webkit-scrollbar-track {
-  background: #f1f1f1; /* 滚动条轨道颜色 */
-}
-
-.modal::-webkit-scrollbar-thumb {
-  background: #888; /* 滚动条滑块颜色 */
-}
-
-.modal::-webkit-scrollbar-thumb:hover {
-  background: #555; /* 滚动条滑块悬停颜色 */
-}
 
 hr {
   border: none; /* 移除默认边框 */
@@ -443,47 +352,62 @@ hr {
   margin-top: 20px; /* 设置顶部边距 */
   margin-bottom: 20px; /* 设置底部边距 */
 }
+
+/*模态框背景*/
 .modal-overlay {
-  position: fixed;
-  top: 0;
+  position: absolute;
+  z-index: 1; /* 位于顶层 */
   left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-}
-
-.modal {
-  width: 600px; /* 固定宽度 */
-  height: 100%; /* 固定高度 */
+  top: 0;
+  width: 100%; /* 全屏宽 */
+  height: 100%; /* 全屏高 */
   overflow: auto; /* 启用滚动条 */
-  background-color: white;
+  background-color: rgb(0,0,0); /* 背景色 */
+  background-color: rgba(0,0,0,0.4); /* 背景色，带透明度 */
+}
+
+/* 模态框内容 */
+.modal {
+  /* 方向为垂直 */
+  flex-direction: column;
+  background-color: #fefefe;
+  margin: 15% auto; /* 15% 从顶部和居中定位 */
   padding: 20px;
-  border-radius: 5px;
-  /* 其他样式 */
+  border: 1px solid #888;
+  width: 50%; /* 宽度 */
+  border-radius: 10px;
+
 }
 
-.close-button {
-  position: relative;
-  top: 10px;
-  left: 10px;
-  width: 30px;
-  height: 30px;
-  background-color: #f5f5f5;
-  border-radius: 50%;
+
+/* 模态框主体内容icon样式 */
+.iconFWC {
+  width: 100px; /* 设置图标的大小 */
+  height: 90px;
+}
+
+.card-icon { /*设置居中*/
+  display: flex; /*设置图标容器为弹性布局*/
+  margin-top: 30px;
+  flex-direction: column; /*设置子元素垂直排列*/
+  align-items: center;
   text-align: center;
-  line-height: 30px;
-  cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-.info-section, .risk-analysis, .pool-size, .holding-info {
-  margin-bottom: 20px;
-  /* 样式调整 */
+.front-icon {
+  font-size: 24px; /* 调整图标的大小 */
+  color: #00B200; /* 绿色 */
 }
+
+
+/* 关闭按钮 */
+.closeButton {
+  color: #241e1e;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
 .tabs {
   display: flex;
   justify-content: center;
@@ -491,6 +415,7 @@ hr {
 
 .tab {
   margin: 0 10px;
+  font-size: 20px;
   cursor: pointer;
   /* 其他样式 */
 }
@@ -501,7 +426,7 @@ hr {
 }
 
 .tab-content {
-  /* 内容区域样式 */
+  /* 模态框结果内容样式 */
 }
 
 .loader {
@@ -541,20 +466,6 @@ hr {
   padding-right: 30px; /* 为图标留出空间 */
 }
 
-.clearIcon, .searchIcon {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-}
-
-.clearIcon {
-  right: 30px;
-}
-
-.searchIcon {
-  right: 5px;
-}
 
 .title {
   color: green;
@@ -577,19 +488,101 @@ hr {
   padding-right: 30px; /* 为图标留出空间 */
 }
 
-.clearIcon, .searchIcon {
+.searchIcon {
   position: absolute;
   top: 50%;
+  right: 5px; /* 调整图标与输入框的距离 */
   transform: translateY(-50%);
   cursor: pointer;
 }
 
-.clearIcon {
-  right: 30px; /* 可根据需要调整位置 */
+
+  .label {
+    flex-shrink: 0; /* 防止标签内容收缩 */
+    width: 150px; /* 或其他适当的宽度 */
+    text-align: left; /* 文本左对齐 */
+  }
+
+  .code-block {
+  /* flex-grow: 1; 占据剩余空间，使内容水平居中 */
+  width: 95%;
+  background-color: #f5f5f5; /* 背景颜色 */
+  border: 1px solid #ccc; /* 边框 */
+  border-radius: 5px; /* 圆角边框 */
+  padding: 10px; /* 内边距，控制代码块内容与边框之间的间距 */
+  font-family: monospace; /* 使用等宽字体，例如 Courier New 或 Monospace */
+  font-size: 14px; /* 字体大小 */
+  line-height: 1.4; /* 行高，控制行与行之间的间距 */
+  overflow: auto; /* 添加滚动条以处理长代码 */
 }
 
-.searchIcon {
-  right: 5px; /* 可根据需要调整位置 */
+.evm_converge-box {
+  display: inline-block; /* 使框的大小适应文字内容 */
+  padding: 2px; /* 控制文本与边框之间的间距 */
+  border: 1px solid cadetblue; /* 设置边框 */
+  background-color: lightblue; /* 设置背景颜色 */
+  color: dodgerblue; /* 设置文字颜色 */
+  border-radius: 5px; /* 添加圆角效果，调整数值以控制圆角的弧度 */
+
+  text-align: right;
+}
+
+.flex-container {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center; /* 确保垂直居中 */
+  white-space: nowrap;
+}
+.right-aligned{
+  display: inline-block;
+  width: 96%;
+  text-align: right;
+}
+
+  .result p {
+    border-bottom: 1px solid #e0e0e0;  /* 添加底部边框 */
+    margin-bottom: 15px;  /* 控制横线之间的间隔 */
+    padding-bottom: 15px;  /* 控制文字到横线的距离 */
+  }
+
+
+  .editor-box {
+    /* 设置编辑框的高度 */
+    height: 800px; /* 或者你希望的任何高度 */
+    /* 添加滚动条 */
+    overflow-y: auto;
+    /* 可选：添加内边距 */
+    padding: 15px;
+    /* 设置背景和字体颜色 */
+    background-color: white;
+    color: black;
+    /* 设置字体大小 */
+    font-size: 1em;
+    /* 设置滚动条样式 */
+    scrollbar-width: thin;
+    scrollbar-color: blue grey;
+    /* 增加边框，更好的区分编辑框 */
+    border: 1px solid #ccc;
+    /* 设置字体家族 */
+    font-family: 'Courier New', Courier, monospace;
+  }
+
+  /* 添加用于处理长文本内容的样式 */
+  .long-text {
+    max-height: 200px; /* 根据需要调整最大高度 */
+    overflow-y: auto; /* 如果内容超过最大高度，则启用垂直滚动 */
+    word-wrap: break-word; /* 避免长单词溢出 */
+  }
+
+  /* 将此类添加到包含长文本的特定元素上（例如 constructorArguments） */
+  .long-text-content {
+    /* 可根据需要添加其他样式以处理长文本内容 */
+  }
+
+.abi-container {
+  white-space: pre-wrap;
+  font-family: 'Courier New', monospace;
 }
 
 </style>

@@ -46,7 +46,7 @@
     sex: null,
     price: null,
   })
-  
+
   const contractName = ref('');
   const contractVersion = ref('');
   const dialogVisible = ref(false)
@@ -207,7 +207,7 @@ const performQuery = () => {
 .input-group {
   /* padding-top: 10px; 增加上内边距 */
   /* padding-bottom: 10px; 增加下内边距 */
-  
+
   display: flex;
   align-items: center;
   flex: 1; /* 使所有输入组具有相同的宽度 */
