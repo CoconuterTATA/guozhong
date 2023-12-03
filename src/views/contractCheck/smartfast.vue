@@ -175,6 +175,7 @@ let options = {
 };
 
 onMounted(() => {
+  
   chartInstance.value = echarts.init(chartsRef.value);
   chartInstance.value.setOption(options);
   let {addObserver} = useResizeElement(chartInstance.value, chartsRef.value);
@@ -355,7 +356,15 @@ onMounted(() => {
       flex-grow: 1;
     }
 
-    & .editor-container,
+     .editor-container{
+      width: 50%;
+      height: 1100px;
+      overflow-y: auto; 
+    }
+  //   .CodeMirror {
+  // height: 100%; // 这将使 CodeMirror 填充整个 .editor-container
+  //   }
+
     & .options-container {
       flex: 1;
       padding: 10px;

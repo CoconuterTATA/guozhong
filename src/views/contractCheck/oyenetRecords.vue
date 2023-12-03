@@ -9,18 +9,6 @@
           @reset="reset"
           @onSubmit="onSubmit"
       >
-        <template v-slot:btn>
-          <div style="display: flex; justify-content: flex-end">
-
-          </div>
-        </template>
-        <template v-slot:sex="scope">{{ scope.row.sex ? '男' : '女' }}</template>
-        <template v-slot:operation="scope">
-        </template>
-        <template v-slot:reportLink="scope">
-          {{ scope.row.reportLink }}
-    <a :href="scope.row.reportLink" target="_blank">查看报告</a>
-</template>
       </PropTable>
     </div>
   </template>
@@ -38,25 +26,7 @@
   const loading = ref(true)
   const appContainer = ref(null)
   import PropTable from '@/components/Table/PropTable/index.vue'
-  // const data = []
   const data = ref([]);
-
-//   for (let i = 0; i < 100; i++) {
-//     data.push({
-//       date: '2016-05-02',
-//       name: '王五' + i,
-//       price: 1 + i,
-//       province: '上海',
-//       admin: 'admin',
-//       sex: i % 2 ? 1 : 0,
-//       checked: true,
-//       id: i + 1,
-//       age: 0,
-//       city: '普陀区',
-//       address: '上海市普上海',
-//       zip: 200333,
-//     })
-//   }
   const list = ref(data)
 
   const formSize = ref('default')
@@ -159,18 +129,20 @@
 
   }
   const column = [
-    { type: 'selection', width: 60 ,fixed: 'left'},
-    {name: 'contract_type', label: '合约类型', inSearch: true, valueType: 'input',width: 200},
+    {name: 'id', label: '合约ID', inSearch: true, valueType: 'input',width: 200},
+    {name: 'contractType', label: '合约类型', inSearch: true, valueType: 'input',width: 200},
+    {name: 'contractName', label: '合约名', inSearch: true, valueType: 'input',width: 200},
     { name: 'solcVersion', label: '合约版本', inSearch: true, valueType: 'input' ,width: 200},
-    { name: 'evm_converge', label: 'EVM代码覆盖率', inSearch: true, valueType: 'input' , width: 200},
+    { name: 'createdAt', label: '创建时间', inSearch: true, valueType: 'input' ,width: 200},
+    { name: 'evmCodeCoverage', label: 'EVM代码覆盖率', inSearch: true, valueType: 'input' , width: 200},
     { name: 'callstack', label: '调用栈', sorter: true, inSearch: true, valueType: 'input', width: 180 },
-    { name: 'time_dependency', label: '时间依赖', sorter: true, inSearch: true, type: 'link', width: 200 },
+    { name: 'timeDependency', label: '时间依赖', sorter: true, inSearch: true, type: 'input', width: 200 },
     { name: 'reentrancy', label: '重入', inSearch: true, valueType: 'input' , width: 280},
-    { name: 'integer_overflow', label: '整数溢出', sorter: true, inSearch: true, valueType: 'input', width: 180 },
-    { name: 'parity_multisig_bug_2', label: '多签名合约漏洞', sorter: true, inSearch: true, type: 'link', width: 300 },
-    { name: 'integer_underflow', label: '整数下溢', inSearch: true, valueType: 'input' , width: 280},
-    { name: 'money_concurrency', label: '货币并发', sorter: true, inSearch: true, valueType: 'input', width: 180 },
-    { name: 'assertion_failure', label: '断言失败', sorter: true, inSearch: true, type: 'link', width: 300 },
+    { name: 'integerOverflow', label: '整数溢出', sorter: true, inSearch: true, valueType: 'input', width: 180 },
+    { name: 'parityMultisigBug_2', label: '多签名合约漏洞', sorter: true, inSearch: true, type: 'input', width: 300 },
+    { name: 'integerUnderflow', label: '整数下溢', inSearch: true, valueType: 'input' , width: 280},
+    { name: 'moneyConcurrency', label: '货币并发', sorter: true, inSearch: true, valueType: 'input', width: 180 },
+    { name: 'assertionFailure', label: '断言失败', sorter: true, inSearch: true, type: 'input', width: 300 },
   ]
 
   onMounted(() => {
@@ -179,7 +151,15 @@
        // 在nextTick中获取数据，以确保在视图更新后执行
        axios.get('http://42.194.184.32:8080/oyente/record')
           .then(response => {
-            data.value = response.data;
+            data.value = response.data.map(item => {
+            let newItem = {...item};
+            Object.keys(newItem).forEach(key => {
+              if(newItem[key] === null) {
+                newItem[key] = "null";
+              }
+            });
+            return newItem;
+          });
             loading.value = false; // 数据加载完成后隐藏加载动画
             // console.log(data.value)
             console.log('获取到的数据:', response.data);

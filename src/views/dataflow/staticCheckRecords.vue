@@ -162,16 +162,18 @@
 
   ])
 
-  const handleCellClick = async (value, row) => {
-  console.log('Static Selected value changed to:', value);
-  console.log('Static row:', row);
-  // 根据 row 的属性来决定要执行的操作
-  if ('sessionName' in row) {   // 使用 'in' 来检查属性是否存在
-    fetchDetailsBySessionId(value);
-  } else if ('id' in row) {
-    fetchListBySessionId(value);
-  }
+  const handleCellClick = async (column, value, row) => {
+    console.log("Received column:", column);
+    console.log("Received value:", value);
+    console.log("Received row:", row);
+
+    if (column === 'sessionId') {
+        fetchDetailsBySessionId(value);
+    } else if (column === 'id') {
+        fetchListBySessionId(value);
+    }
 }
+
 
 const fetchDetailsBySessionId = (sessionId) => {
   // 更新表结构为会话详情
@@ -184,8 +186,8 @@ const fetchDetailsBySessionId = (sessionId) => {
   loading.value = true; // 开启加载动画
   axios.post(`http://42.194.184.32:8080/pcap/listPacketsBySessionld`, params)
     .then(response => {
-      console.error('根据会话Name获取详情成功');
       console.log(response.data);
+      console.log('success')
       list.value = response.data; // 更新list的值
       loading.value = false; // 数据加载完成后隐藏加载动画
     })
@@ -210,7 +212,7 @@ column.value = [
 loading.value = true; // 开启加载动画
 axios.post(`http://42.194.184.32:8080/pcap/listSessionByTrafficId?traffic_id=${para}`)
   .then(response => {
-    console.error('根据sessionId获取数据成功');
+    console.log('根据Id获取session数据成功');
     console.log(response.data);
     list.value = response.data; // 更新list的值
     loading.value = false; // 数据加载完成后隐藏加载动画
@@ -271,5 +273,9 @@ axios.post(`http://42.194.184.32:8080/pcap/listSessionByTrafficId?traffic_id=${p
     position: absolute;
     right: 15px;
     top: 10px;
+  }
+  .back-button{
+    position: absolute;
+    top: 2.8%;
   }
   </style>

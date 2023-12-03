@@ -109,6 +109,7 @@ export default defineComponent({
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="scss">
+
 .CodeMirror-wrap{
   height: 100%;
 }

@@ -108,7 +108,7 @@ class="cancelButton"
 
       <!-- 处理ID列和sessionName列 -->
       <el-table-column
-        v-else-if="item.name === 'id' || item.name === 'sessionName'"
+        v-else-if="item.name === 'id' || item.name === ' '"
         :prop="item.name"
         :label="item.label"
         :width="item.width"
@@ -134,7 +134,7 @@ class="cancelButton"
         :fixed="item.fixed"
       >
         <template #default="scope">
-          {{ scope.row[item.name] }}
+          <span>{{ scope.row[item.name] === null ? 'null' : scope.row[item.name] }}</span>
         </template>
       </el-table-column>
     </template>
@@ -215,12 +215,9 @@ class="cancelButton"
   const showFileDialog = ref(false);
 
   const handleCellClick = (column, value, row) => {
-    console.log('Clicked column:', column, 'value:', value);
-    // 确认点击的是ID列
-    if (column === 'id') {
-        emit('handleCellClick', value, row);
-    }else if (column === 'sessionName') {
-        emit('handleCellClick', value, row);
+    console.log('Clicked column in child:', column);
+    if (column === 'id' || column === 'sessionId') {
+        emit('handleCellClick', column, value, row);
     }
 }
 

@@ -49,6 +49,7 @@
 
   const contractName = ref('');
   const contractVersion = ref('');
+  // const loading = ref(true);
   const dialogVisible = ref(false)
   const title = ref('新增')
   const rowObj = ref({})
@@ -148,28 +149,18 @@
     { name: 'reportLink', label: '检测报告结果', sorter: true, inSearch: true, type: 'link', width: 600 },
   ]
 
-  onMounted(() => {
-    nextTick(()=>{
-      // let data = appContainer.value.
-       // 在nextTick中获取数据，以确保在视图更新后执行
-       axios.get('http://42.194.184.32:8080/record/listAuditRecord')
-          .then(response => {
-            data.value = response.data;
-            loading.value = false; // 数据加载完成后隐藏加载动画
-            originalData.value = response.data;
-            // console.log(data.value)
-            console.log('获取到的数据:', response.data);
-            list.value = response.data;
-          })
-          .catch(error => {
-            console.error('获取数据失败', error);
-            loading.value = false; // 处理错误情况，也隐藏加载动画
-          });
-    })
-    setTimeout(() => {
-      loading.value = false
-    }, 500)
-  })
+  onMounted(async () => {
+  try {
+    const response = await axios.get('http://42.194.184.32:8080/record/listAuditRecord');
+    data.value = response.data;
+    originalData.value = response.data;
+    list.value = response.data;
+  } catch (error) {
+    console.error('获取数据失败', error);
+  } finally {
+    loading.value = false; // 无论数据加载成功或失败，都应该停止加载状态
+  }
+});
   watch([contractName, contractVersion], () => {
   // 当输入框的内容发生变化时，执行查询
   performQuery();
