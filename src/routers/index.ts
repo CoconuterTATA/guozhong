@@ -22,6 +22,7 @@ import dataflow from './modules/dataflow';
 import contractSecurityAnalysis from './modules/contractSecurityAnalysis';
 import contractDetector from './modules/contractdetector';
 import gasTime from './modules/gas';
+import securityProtocolAnalysis from './modules/securityProtocol';
 
 // 异步组件
 export const asyncRoutes = [
@@ -42,6 +43,7 @@ export const asyncRoutes = [
     // ...excelRouter,
     //...externalLink,
     ...systemRouter,
+    ...securityProtocolAnalysis
 ]
 
 /**

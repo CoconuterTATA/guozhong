@@ -1,14 +1,6 @@
 <template>
     <div class="app-container" v-if="!loading" ref="appContainer">
       <div class="inputs">
-    <div class="input-group">
-      <span class="input-label">合约名：</span>
-      <el-input v-model="contractName"></el-input>
-    </div>
-    <div class="input-group">
-      <span class="input-label">合约版本：</span>
-      <el-input v-model="contractVersion"></el-input>
-    </div>
     </div>
       <PropTable
           :loading="loading"
@@ -17,6 +9,8 @@
           :data="list"
           @reset="reset"
           @onSubmit="onSubmit"
+          :showInput="true"
+          @search="handleSearch"
       >
       </PropTable>
     </div>
@@ -39,14 +33,6 @@
   const data = ref([]);
   const list = ref(data)
 
-  const formSize = ref('default')
-  const ruleFormRef = ref<FormInstance>()
-  const ruleForm = reactive({
-    name: '',
-    sex: null,
-    price: null,
-  })
-
   const contractName = ref('');
   const contractVersion = ref('');
   // const loading = ref(true);
@@ -54,66 +40,8 @@
   const title = ref('新增')
   const rowObj = ref({})
   const selectObj = ref([])
-  const add = () => {
-    title.value = '新增'
-    dialogVisible.value = true
-  }
 
-  const batchDelete = () => {
-    if (!selectObj.value.length) {
-      return ElMessage.error('未选中任何行')
-    }
-    ElMessageBox.confirm('你确定要删除选中项吗?', '温馨提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-      draggable: true,
-    })
-        .then(() => {
-          ElMessage.success('模拟删除成功')
-          list.value = list.value.concat([])
-        })
-        .catch(() => {})
-  }
-  const selectionChange = (val) => {
-    selectObj.value = val
-  }
 
-  const edit = (row) => {
-    title.value = '编辑'
-    rowObj.value = row
-    dialogVisible.value = true
-    ruleForm.name = row.name
-    ruleForm.sex = row.sex
-    ruleForm.price = row.price
-  }
-
-  const del = (row) => {
-    console.log('row==', row)
-    ElMessageBox.confirm('你确定要删除当前项吗?', '温馨提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-      draggable: true,
-    })
-        .then(() => {
-          list.value = list.value.filter((item) => item.id !== row.id)
-          ElMessage.success('删除成功')
-          loading.value = true
-          setTimeout(() => {
-            loading.value = false
-          }, 500)
-        })
-        .catch(() => {})
-  }
-
-  const reset = () => {
-    loading.value = true
-    setTimeout(() => {
-      loading.value = false
-    }, 500)
-    ElMessage.success('触发重置方法')
-  }
 
   const onSubmit = (val) => {
     console.log('val===', val);
@@ -134,7 +62,13 @@
     // 更新list，即表格的显示数据
     list.value = filteredData;
 }
-
+const handleSearch = ({ contractName, contractVersion }) => {
+  list.value = originalData.value.filter(item => {
+    const matchesName = contractName ? item.contractName.includes(contractName) : true;
+    const matchesVersion = contractVersion ? item.solcVersion.includes(contractVersion) : true;
+    return matchesName && matchesVersion;
+  });
+};
 
 
   const getHeight = ()=>{

@@ -63,18 +63,25 @@ class="cancelButton"
     v-if="selectedFiles.length > 0" >
     取消
 </el-button>
-
-
-      <div class="search">
-        <input type="file" ref="fileInput" @change="handleFileChange" accept=".pcap" multiple style="display: none;">
-        <el-button type="primary" @click="triggerFileInput" v-if="showButton">上传pcap流量包</el-button>
-        <!-- <el-button type="primary" @click="onSubmit" :icon="Search">查询</el-button> -->
-        <el-button @click="refreshPage">更新</el-button>
-        <el-button link type="primary" @click="isExpand = !isExpand"
-          >{{ isExpand ? '合并' : ''
-          }}</el-button>
+<div class="search">
+  <input type="file" ref="fileInput" @change="handleFileChange" accept=".pcap" multiple style="display: none;">
+  <el-button type="primary" @click="triggerFileInput" v-if="showButton">上传pcap流量包</el-button>
+  <el-button v-if="back" @click="backOff">返回</el-button>
+  <el-button @click="refreshPage">更新</el-button>
+  <div v-if="showInput" class="input-group-horizontal">
+      <div class="input-group">
+        <span class="input-label">合约名：</span>
+        <el-input v-model="contractName"></el-input>
       </div>
+      <div class="input-group">
+        <span class="input-label">合约版本：</span>
+        <el-input v-model="contractVersion"></el-input>
+      </div>
+      <el-button link type="primary" @click="emitSearch">搜索</el-button>
     </div>
+  <el-button link type="primary" @click="isExpand = !isExpand">{{ isExpand ? '合并' : '' }}</el-button>
+</div>
+</div>
     <!----------底部---------------------->
     <div class="footer">
       <!-----------工具栏操作工具----------------->
@@ -108,7 +115,7 @@ class="cancelButton"
 
       <!-- 处理ID列和sessionName列 -->
       <el-table-column
-        v-else-if="item.name === 'id' || item.name === ' '"
+        v-else-if="item.name === 'id'"
         :prop="item.name"
         :label="item.label"
         :width="item.width"
@@ -165,8 +172,11 @@ class="cancelButton"
   import { ElMessage, ElMessageBox } from 'element-plus'
   import type { FormInstance } from 'element-plus'
   const ruleFormRef = ref<FormInstance>()
-  const emit = defineEmits(['reset', 'onSubmit', 'selection-change', 'upload', 'triggerFileInput','handleSelectChange', 'handleCellClick'])
+  const emit = defineEmits(['files-uploaded','search','reset', 'onSubmit', 'selection-change', 'upload', 'triggerFileInput','handleSelectChange', 'handleCellClick','backOff'])
   const selectedValue = ref(null)
+  const emitSearch = () => {
+  emit('search', { contractName: contractName.value, contractVersion: contractVersion.value });
+};
   let props = defineProps({
     columns: {
       type: Array<any>,
@@ -200,11 +210,20 @@ class="cancelButton"
     showNums:{
       type:Boolean,
       default:false,
+    },
+    showInput:{
+      type:Boolean,
+      default:false,
+    },
+    back:{
+      type:Boolean,
+      default:false,
     }
   })
 
   const selectedFiles = ref([]);
-
+  const contractName = ref('');
+  const contractVersion = ref('');
   const fileInput = ref(null)
   const currentPage1 = ref(1)
   // 收缩展开
@@ -222,14 +241,14 @@ class="cancelButton"
 }
 
 
-  const uploadFiles = () => {
-    upload(selectedFiles.value); 
-    selectedFiles.value = []; 
-    fileInput.value.value = ''; // 清空文件输入的值
-};
+
 
 const refreshPage = () =>{
   window.location.reload();
+}
+const backOff = () =>{
+  // console.log('callback')
+  emit('backOff')
 }
 const cancelFiles = () => {
     selectedFiles.value = [];
@@ -282,7 +301,13 @@ const cancelFiles = () => {
     console.log('submit!', formInline)
     emit('onSubmit', formInline)
   }
-  const upload = (files) => {  // 添加了files参数
+  const uploadFiles = () => {
+    upload(selectedFiles.value); 
+    emit('files-uploaded', selectedFiles.value.map(file => file.name));
+    selectedFiles.value = []; 
+    fileInput.value.value = ''; // 清空文件输入的值
+};
+  const upload = (files) => {  
   const formData = new FormData();
   for (let i = 0; i < files.length; i++) {
     formData.append('file', files[i]);
@@ -312,21 +337,23 @@ const cancelFiles = () => {
     })
     emit('reset')
   }
-  const deleteAction = (row) => {
-    ElMessageBox.confirm('你确定要删除当前项吗?', '温馨提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-      draggable: true,
-    })
-      .then(() => {
-        list.value = list.value.filter((item) => item.id !== row.id)
-        ElMessage.success('删除成功')
-      })
-      .catch(() => {})
-  }
 </script>
 <style scoped lang="scss">
+
+.input-group-horizontal {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  position: absolute;
+  top: 9.3%; /* 根据需要调整 */
+  left: 3%; /* 根据需要调整 */
+}
+
+.input-group {
+  margin-right: 15%; /* 在输入框之间添加间隔 */
+}
+
+
 .ul-css{
   position: relative;
 }

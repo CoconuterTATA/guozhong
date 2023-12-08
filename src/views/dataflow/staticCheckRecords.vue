@@ -9,13 +9,10 @@
           @reset="reset"
           @onSubmit="onSubmit"
           @handleCellClick="handleCellClick"
+          :back=true
+          @backOff="goBack"
       >
       </PropTable>
-      <el-button
-      @click="goBack"
-      class="back-button">
-      返回
-    </el-button>
   </div>
 
   </template>
@@ -50,33 +47,9 @@
   const title = ref('新增')
   const rowObj = ref({})
   const selectObj = ref([])
-  const add = () => {
-    title.value = '新增'
-    dialogVisible.value = true
-  }
-
-  const batchDelete = () => {
-    if (!selectObj.value.length) {
-      return ElMessage.error('未选中任何行')
-    }
-    ElMessageBox.confirm('你确定要删除选中项吗?', '温馨提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-      draggable: true,
-    })
-        .then(() => {
-          ElMessage.success('模拟删除成功')
-          list.value = list.value.concat([])
-        })
-        .catch(() => {})
-  }
-  const selectionChange = (val) => {
-    selectObj.value = val
-  }
-
-
+ 
   const goBack = () => {
+  console.log('goback')
   list.value = originalList.value;
   column.value = [
     { name: 'id', label: 'ID', inSearch: true, valueType: 'input', width: 100 },
