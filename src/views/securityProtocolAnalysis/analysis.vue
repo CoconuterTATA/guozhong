@@ -27,17 +27,24 @@
         <div>
           <h3>Claim</h3>
           <el-table :data="responseData.claims" style="width: 100%">
-            <el-table-column prop="protocolName" label="Protocol" width="180"></el-table-column>
-            <el-table-column prop="role" label="Role" width="100"></el-table-column>
-            <el-table-column prop="claimDetails" label="Claim Details"></el-table-column>
-            <el-table-column prop="status" label="Status" width="120" :formatter="formatStatus"></el-table-column>
-            <el-table-column prop="remark" label="Remark"></el-table-column>
-            <el-table-column label="Attack" width="160">
-              <template #default="scope">
-                <el-button v-if="scope.row.attacks && scope.row.attacks.length > 0" type="text" @click="openAttackImage(scope.row.attacks[0].fileName)">View Attack</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
+  <el-table-column prop="protocolName" label="Protocol" width="180"></el-table-column>
+  <el-table-column prop="role" label="Role" width="100"></el-table-column>
+  <el-table-column prop="claimDetails" label="Claim Details"></el-table-column>
+  <el-table-column prop="status" label="Status" width="120" :formatter="formatStatus"></el-table-column>
+  <el-table-column prop="remark" label="Remark"></el-table-column>
+  <el-table-column label="Attack" width="160">
+    <template #default="scope">
+      <el-button 
+        v-if="!scope.row.status" 
+        type="text" 
+        @click="openAttackImage(findFigForClaim(scope.row, responseData.figs))"
+      >
+        View Attack
+      </el-button>
+    </template>
+  </el-table-column>
+</el-table>
+
         </div>
       </el-dialog>
     </div>
@@ -51,9 +58,10 @@
   import axios from 'axios';
 
 const protocolName = ref('');
+const codeValue = ref('');
 const errorCount = ref(0);
 const verificationResult = ref('');
-const dialogVisible = ref(true); // 初始设为 true 以便查看样式
+const dialogVisible = ref(false); // 初始设为 true 以便查看样式
 const responseData = ref({
   summary: "Verification results:\nclaim id [wmf-Lowe,I1], Secret(Kir): No attacks within bounds.\nclaim id [wmf-Lowe,I2], Nisynch: At least 1 attack.\nclaim id [wmf-Lowe,R1], Secret(Kir): No attacks within bounds.\nclaim id [wmf-Lowe,R2], Nisynch: At least 1 attack.\n",
   figs: [
@@ -148,36 +156,68 @@ const responseData = ref({
 
 
 const startDetection = async () => {
-  dialogVisible.value = true;
-
+  try {
+    const formData = new FormData();
+    formData.append('protocolName', protocolName.value);
+    formData.append('protocolCode', codeValue.value); 
+    const response = await axios.post('http://42.194.184.32:8080/protocolAnalysis', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data' 
+      }
+    });
+    console.log(response.data)
+    responseData.value = response.data;
+    dialogVisible.value = true;
+  } catch (error) {
+    console.error('Error message:', error);
+  }
 };
+
+const findFigForClaim = (claim, figs) => {
+  if (!claim.status) {
+    const unassignedFig = figs.find(fig => !fig.assigned);
+    if (unassignedFig) {
+      unassignedFig.assigned = true;
+      return unassignedFig.figBase64;
+    }
+  }
+  return null;
+};
+
+
+const findFigBase64 = (fileName) => {
+  console.log('Looking for image:', fileName); 
+  const fig = responseData.value.figs.find(f => f.figName === fileName);
+  if (fig) {
+    console.log('Found image:', fig.figBase64); 
+    return fig.figBase64;
+  } else {
+    console.log('Image not found for:', fileName); 
+    return null;
+  }
+};
+
 
 const getStatusColor = (status) => {
   return status ? 'green' : 'red';
 };
-const openAttackImage = (fileName) => {
-  // 模拟打开图片链接的操作
-  alert(`Open image: ${fileName}`);
+const openAttackImage = (figBase64) => {
+  console.log('Opening image with data:', figBase64); // 用于调试
+  const imageWindow = window.open();
+  imageWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>Attack Image</title>
+    </head>
+    <body>
+      <img src="${figBase64}" alt="Attack Image" />
+    </body>
+    </html>
+  `);
 };
-const mergeProtocolCells = ({ row, column, rowIndex, columnIndex }) => {
-//   if (columnIndex === 0) { 
-//     if (rowIndex !== 0) {
-//       if (responseData.claims[rowIndex].protocolName === responseData.claims[rowIndex - 1].protocolName) {
-//         return [0, 0]; 
-//       } else {
-//         let rowspan = 1;
-//         for (let i = rowIndex + 1; i < responseData.claims.length; i++) {
-//           if (responseData.claims[i].protocolName === row.protocolName) {
-//             rowspan++;
-//           } else {
-//             break;
-//           }
-//         }
-//         return [rowspan, 1]; 
-//       }
-//     }
-//   }
-};
+
+
   
   onMounted(() => {
   })
