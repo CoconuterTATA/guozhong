@@ -5,105 +5,14 @@
 import * as echarts from 'echarts'
 import { EChartsType } from 'echarts/core'
 import { onMounted, ref } from 'vue'
+import axios from "axios";
 const chartsRef = ref<HTMLElement | null>()
-var trafficWay = [
-  {
-    name: 'Ⅰ类',
-    value: 20,
-  },
-  {
-    name: 'Ⅱ类',
-    value: 20,
-  },
-  {
-    name: 'Ⅲ类',
-    value: 20,
-  },
-  {
-    name: 'Ⅳ类',
-    value: 20,
-  },
-  { name: 'Ⅴ类', value: 20 },
-  { name: '劣Ⅴ类', value: 20 },
-];
+let color = ['#fd566a', '#9787ff', '#fdb36a', '#fdd56a', '#6da7ff', '#63e1f2', '#ff3000'];
 
-var data = [];
-var color = ['#fd566a', '#9787ff', '#fdb36a', '#fdd56a', '#6da7ff', '#63e1f2', '#ff3000'];
-for (var i = 0; i < trafficWay.length; i++) {
-  data.push(
-      {
-        value: trafficWay[i].value,
-        name: trafficWay[i].name,
-        itemStyle: {
-          normal: {
-            borderWidth: 5,
-            shadowBlur: 20,
-            borderColor: color[i],
-            shadowColor: color[i],
-          },
-        },
-      },
-      {
-        value: 2,
-        name: '',
-        itemStyle: {
-          normal: {
-            label: {
-              show: false,
-            },
-            labelLine: {
-              show: false,
-            },
-            color: 'rgba(0, 0, 0, 0)',
-            borderColor: 'rgba(0, 0, 0, 0)',
-            borderWidth: 0,
-          },
-        },
-      }
-  );
-}
-var seriesOption = [
-  {
-    name: '',
-    type: 'pie',
-    clockWise: false,
-    radius: [105, 109],
-    hoverAnimation: false,
-    itemStyle: {
-      normal: {
-        label: {
-          show: true,
-          position: 'outside',
-
-          formatter: function (params) {
-            var percent = 0;
-            var total = 0;
-            for (var i = 0; i < trafficWay.length; i++) {
-              total += trafficWay[i].value;
-            }
-            percent = ((params.value / total) * 100).toFixed(0);
-            if (params.name !== '') {
-              return params.name + '\t' + percent + '%';
-            } else {
-              return '';
-            }
-          },
-        },
-        labelLine: {
-          length: 10,
-          length2: 20,
-          show: true,
-          color: '#00ffff',
-        },
-      },
-    },
-    data: data,
-  },
-];
 let options = {
   color: color,
   title: [{
-    text: '水质监测',
+    text: '检测合约版本统计',
     top: '44%',
     textAlign: 'center',
     left: '49.50%',
@@ -114,52 +23,82 @@ let options = {
       fontSize: 20,
       fontWeight: '400',
     },
-  }, {
-    text: '水环境监测站',
-    top: '49%',
-    textAlign: 'center',
-    left: '49.50%',
-    textStyle: {
-      color: '#fff',
-      fontSize: 20,
-      fontWeight: '400',
-    },
-  }, {
-    text: '9',
-    top: '53%',
-    textAlign: 'center',
-    left: '48%',
-    textStyle: {
-      color: '#f6ea2f',
-      fontSize: 25,
-      fontWeight: '800',
-      fontStyle: 'italic'
-    },
-  }, {
-    text: '个',
-    top: '53.5%',
-    textAlign: 'center',
-    left: '50.5%',
-    textStyle: {
-      color: '#fff',
-      fontSize: 16,
-      fontWeight: '400',
-    },
   }],
   tooltip: {
     show: false,
   },
-
   toolbox: {
     show: false,
   },
-  series: seriesOption,
+  series: [
+    {
+      name: '',
+      type: 'pie',
+      clockWise: false,
+      radius: [105,109],
+      hoverAnimation: false,
+      itemStyle: {
+        normal: {
+          borderWidth: 5,
+          shadowBlur: 20,
+          borderColor: color[0],
+          shadowColor: color[0],
+        },
+      },
+      label: {
+        show: true,
+        position: 'outside',
+        textStyle: {
+          fontSize: 16, // 设置字体大小
+          fontWeight: 'bold', // 设置字体粗细
+          color: '#fff', // 设置字体颜色
+        },
+      },
+      labelLine: {
+        length: 10,
+        length2: 20,
+        show: true,
+        color: '#00ffff',
+      },
+      data: [],
+    }
+  ],
 };
 
 let chart: EChartsType
+
+const fetchData = async () => {
+  try {
+    const response = await axios.get("http://42.194.184.32:8080/smartfast/getVersionCounts");
+    const  data = await response.data;
+    updateChart(data);
+  } catch (e) {
+    console.error("Error fetching data: ", e);
+  }
+};
+
+const updateChart = (chartData) => {
+  const data = Object.keys(chartData).map((version, index) => ({
+    value: chartData[version],
+    name: version,
+    itemStyle: {
+      normal: {
+        borderWidth: 5,
+        shadowBlur: 20,
+        borderColor: color[index],
+        shadowColor: color[index],
+      },
+    },
+  }));
+
+  options.series[0].data = data;
+  chart.setOption(options);
+};
+
 const initChart = () => {
   const chart = echarts.init(chartsRef.value)
-  chart.setOption(options)
+  fetchData(); // 第一次获取数据
+  setInterval(fetchData, 20000); // Fetch data every 20 seconds
   return chart
 }
 onMounted(() => {

@@ -1,27 +1,42 @@
 <template>
   <div class="echarts" ref="chartsRef" />
 </template>
+
 <script setup lang="ts">
-  import BarCharts from './components/bar.vue'
-  import * as echarts from 'echarts'
-  import { EChartsType } from 'echarts/core'
-  import { onMounted, ref,reactive } from 'vue'
-  const chartsRef = ref<HTMLElement | null>()
-  const data = [154, 230, 224, 218, 135, 147, 260]
-  const color = ['#fa796f', '#54c1fb', '#ca6cd4', '#59dcc1', '#09a4ea', '#e98f4d', '#ea8e49']
-  const dataOptions = []
+import * as echarts from 'echarts';
+import axios from 'axios';
+import { EChartsType } from 'echarts/core';
+import { onMounted, ref, onBeforeUnmount } from 'vue';
 
-  data.forEach((item, index) => {
-    let obj = {
-      value: data[index],
-      itemStyle: {
-        color: color[index],
-      },
-    }
-    dataOptions.push(obj)
-  })
+// 引用图表容器
+const chartsRef = ref<HTMLElement | null>();
+// 颜色数组
+const color = ['#ff0000', '#f39c12', '#27ae60', '#9b59b6', '#3498db'];
 
+// 异步获取数据的函数
+const fetchData = async () => {
+  try {
+    // 从接口获取数据
+    const response = await axios.get('http://42.194.184.32:8080/smartfast/getVulnerabilityInfo');
+    const data = response.data;
+    // 更新图表
+    updateChart(data);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+  }
+};
 
+// 更新图表的函数
+const updateChart = (data: any) => {
+  // 根据接口返回的数据生成图表的数据格式
+  const dataOptions = Object.values(data).map((value: number, index: number) => ({
+    value,
+    itemStyle: {
+      color: color[index],
+    },
+  }));
+
+  // 图表的配置选项
   const options = {
     color,
     grid: {
@@ -38,25 +53,22 @@
       borderColor: 'rgba(0,0,0,0.7)',
       formatter: (name, val) => {
         const tipHtml = `
-                     <div class="m-info" style=" opacity: 0.95;font-size: 12px; color: white;" >
-                         <div class="title" ></div>
-                         <div class="title" >完成占比${name[0].value}</div>
-                 </div>`
-        return tipHtml
+          <div class="m-info" style="opacity: 0.95; font-size: 12px; color: white;">
+            <div class="title" ></div>
+            <div class="title">${name[0].value}</div>
+          </div>`;
+        return tipHtml;
       },
     },
     yAxis: {
       type: 'value',
-      // 设置坐标轴的 文字样式
       axisLabel: {
         color: '#bbdaff',
-        margin: 20, // 刻度标签与轴线之间的距离。
+        margin: 20,
       },
       axisTick: {
-        // 取消坐标轴刻度线
         show: false,
       },
-      // 坐标轴轴线相关设置。
       splitLine: {
         lineStyle: {
           color: '#2d5baf',
@@ -68,20 +80,19 @@
       splitLine: {
         show: false,
       },
-      // 坐标轴轴线相关设置。
       axisLine: {
         lineStyle: {
           color: '#2d5baf',
         },
       },
-      data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+      data: ['高风险漏洞', '中风险漏洞', '低风险漏洞', '警告', '需要优化'],
       axisLabel: {
-        // 设置坐标轴的 文字样式
-        color: '#bbdaff',
-        margin: 20, // 刻度标签与轴线之间的距离。
+        color: '#fff',
+        margin: 20,
+        fontsize: 14,
+        fontWeight: 'bold', // 设置字体粗细
       },
       axisTick: {
-        // 取消坐标轴刻度线
         show: false,
       },
     },
@@ -95,25 +106,48 @@
         },
       },
     ],
+  };
 
+  // 如果图表已经初始化，则设置新的选项
+  if (chart) {
+    chart.setOption(options);
   }
+};
 
-  let chart: EChartsType
-  const initChart = () => {
-    const chart = echarts.init(chartsRef.value)
-    chart.setOption(options)
-    return chart
-  }
-  onMounted(() => {
-    chart = initChart()
-    window.addEventListener('resize', function () {
-      chart && chart.resize()
-    })
-  })
+// 图表实例
+let chart: EChartsType;
+
+// 初始化图表的函数
+const initChart = () => {
+  // 初始化 ECharts 实例
+  chart = echarts.init(chartsRef.value);
+  // 初次获取数据并更新图表
+  fetchData();
+  return chart;
+};
+
+// 组件挂载时执行
+onMounted(() => {
+  // 初始化图表
+  chart = initChart();
+  // 每20秒更新一次数据
+  setInterval(fetchData, 20000);
+  // 监听窗口大小变化，调整图表大小
+  window.addEventListener('resize', () => {
+    chart && chart.resize();
+  });
+});
+
+// 组件销毁前执行
+onBeforeUnmount(() => {
+  // 清除定时器，防止内存泄漏
+  clearInterval(fetchData);
+});
 </script>
+
 <style lang="scss" scoped>
-  .echarts {
-    height: 100%;
-    width: 100%;
-  }
+.echarts {
+  height: 100%;
+  width: 100%;
+}
 </style>

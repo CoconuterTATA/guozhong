@@ -12,7 +12,7 @@ const chartsRef = ref<HTMLElement | null>()
 
 const backgroundColor = '#101736';
 const title = {
-  text: '网络/安全设备',
+  text: '检测结果',
   textStyle: {
     // color: '#fff',
     fontSize: 16,
@@ -27,7 +27,7 @@ const legend = {
   icon: 'circle', //图例形状
   padding: 0,
   bottom: 'center',
-  right: 120,
+  right: 30,
   itemWidth: 14, //小圆点宽度
   itemHeight: 14, // 小圆点高度
   itemGap: 21, // 图例每项之间的间隔。[ default: 10 ]横向布局时为水平间隔，纵向布局时为纵向间隔。
@@ -40,7 +40,7 @@ const tooltip = {
   show: true,
   formatter: '{b}:{d}%',
 };
-const color = ['#03acd1', '#04cab7', '#03c781', '#fce348', '#fc2d8a', '#0292fe'];
+const color = ['#9b59b6', '#3498db', '#ff0000', '#27ae60', '#f39c12'];
 let options = {
   // backgroundColor,
   color,
@@ -82,12 +82,11 @@ let options = {
 
       },
       data: [
-        { value: 1048, name: 'IDS' },
-        { value: 735, name: 'VPN' },
-        { value: 580, name: '交换机' },
-        { value: 484, name: '防火墙' },
-        { value: 300, name: ' WAF' },
-        { value: 600, name: ' 堡垒机' },
+        { value: 735, name: '提醒' },
+        { value: 580, name: '优化' },
+        { value: 484, name: '高风险漏洞' },
+        { value: 300, name: ' 低风险漏洞' },
+        { value: 600, name: ' 中风险漏洞' },
       ].sort((a, b) => b.value - a.value), //数组从大到小排序
 
       emphasis: {

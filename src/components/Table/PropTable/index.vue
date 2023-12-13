@@ -3,9 +3,12 @@
     <div class="header">
       <el-form :inline="true" class="search-form" :model="formInline" ref="ruleFormRef">
         <template v-for="(item, index) in formSearchData" :key="index">
-          <el-form-item :label="item.label" v-show="isExpand ? isExpand : index < 2">
-            <template v-if="item.valueType === 'input'">
-              <el-input v-model="formInline[item.name]" :placeholder="`请输入${item.label}`" />
+          <el-form-item class="elformcss" :label="item.label" v-show="isExpand ? isExpand : index < 1">
+            <template v-if="item.valueType === 'input'" >
+              <!-- <el-input class="inputsearch" v-model="formInline[item.name]" :placeholder="`请输入${item.label}`" /> -->
+            </template>
+            <template v-if="item.valueType === 'link'">
+              <a :href="formInline[item.name]" target="_blank">{{ item.label }}</a>
             </template>
             <template v-if="item.valueType === 'select'">
               <el-select
@@ -24,17 +27,61 @@
           </el-form-item>
         </template>
       </el-form>
-      <div class="search">
-        <el-button type="primary" @click="onSubmit" :icon="Search">查询</el-button>
-        <el-button @click="reset(ruleFormRef)">重置</el-button>
-        <el-button link type="primary" @click="isExpand = !isExpand"
-          >{{ isExpand ? '合并' : '展开'
-          }}<el-icon>
-            <arrow-down v-if="!isExpand" />
-            <arrow-up v-else /> </el-icon
-        ></el-button>
+      <el-select 
+  v-model="selectedValue" 
+  placeholder="请选择监控节点" 
+  style="width: 20%;"
+  v-if="showSuperVersion"
+  @change="handleSelectChange"
+>
+  <el-option
+    v-for="node in nodes"
+    :key="node.value"
+    :label="node.label"
+    :value="node.value">
+  </el-option>
+</el-select>
+
+<span 
+    style="display: inline-block; width: 100%; height: 10%; padding-top: 5px; padding-left: 2%;" 
+    v-if="showNums">
+    当前监控节点数：{{ nodeCount }}
+</span>
+
+<ul class="ul-css" v-if="selectedFiles.length > 0">
+    <li v-for="file in selectedFiles" :key="file.name">{{ file.name }}</li>
+</ul>
+<el-button 
+    type="primary" 
+    @click="uploadFiles" 
+    v-if="selectedFiles.length > 0">
+    检测
+</el-button>
+<el-button 
+class="cancelButton"    
+@click="cancelFiles" 
+    v-if="selectedFiles.length > 0" >
+    取消
+</el-button>
+<div class="search">
+  <input type="file" ref="fileInput" @change="handleFileChange" accept=".pcap" multiple style="display: none;">
+  <el-button type="primary" @click="triggerFileInput" v-if="showButton">上传pcap流量包</el-button>
+  <el-button v-if="back" @click="backOff">返回</el-button>
+  <el-button @click="refreshPage">更新</el-button>
+  <div v-if="showInput" class="input-group-horizontal">
+      <div class="input-group">
+        <span class="input-label">合约名：</span>
+        <el-input v-model="contractName"></el-input>
       </div>
+      <div class="input-group">
+        <span class="input-label">合约版本：</span>
+        <el-input v-model="contractVersion"></el-input>
+      </div>
+      <el-button link type="primary" @click="emitSearch">搜索</el-button>
     </div>
+  <el-button link type="primary" @click="isExpand = !isExpand">{{ isExpand ? '合并' : '' }}</el-button>
+</div>
+</div>
     <!----------底部---------------------->
     <div class="footer">
       <!-----------工具栏操作工具----------------->
@@ -42,47 +89,75 @@
         <slot name="btn"></slot>
       </div>
       <!-- ------------表格--------------->
+      <!-- ------------表格--------------->
       <div class="table">
-        <el-table
-          class="zb-table"
-          v-loading="loading"
-          @selection-change="(val) => emit('selection-change', val)"
-          :data="list"
-          :border="true"
-        >
-          <template v-for="item in columns">
-            <el-table-column
-              v-if="item.type"
-              :type="item.type"
-              :width="item.width"
-              :align="item.align != null ? item.align : 'center'"
-              :fixed="item.fixed"
-              :label="item.label"
-            />
-            <el-table-column
-              v-else
-              :prop="item.name"
-              :width="item.width"
-              :align="item.align != null ? item.align : 'center'"
-              :fixed="item.fixed"
-              :label="item.label"
-            >
-              <template #default="scope">
-                <span v-if="!item.slot">{{ scope.row[item.name] }}</span>
-                <slot v-else :name="item.name" :item="item" :row="scope.row"></slot>
-              </template>
-            </el-table-column>
-          </template>
-        </el-table>
-      </div>
+  <el-table
+    class="zb-table"
+    v-loading="loading"
+    @selection-change="(val) => emit('selection-change', val)"
+    :data="list"
+    :border="true"
+  >
+    <template v-for="item in columns">
+      <!-- 处理链接类型的列 -->
+      <el-table-column
+        v-if="item.type === 'link'"
+        :prop="item.name"
+        :label="item.label"
+        :width="item.width"
+        :align="item.align ? item.align : 'center'"
+        :fixed="item.fixed"
+      >
+        <template #default="scope">
+          <a :href="scope.row[item.name]">{{ scope.row[item.name] }}</a>
+        </template>
+      </el-table-column>
+
+      <!-- 处理ID列和sessionName列 -->
+      <el-table-column
+        v-else-if="item.name === 'id'"
+        :prop="item.name"
+        :label="item.label"
+        :width="item.width"
+        :align="item.align ? item.align : 'center'"
+        :fixed="item.fixed"
+      >
+        <template #default="scope">
+          <span 
+            @click="handleCellClick(item.name, scope.row[item.name], scope.row)"
+            style="font-weight: bold; color: blue; cursor: pointer;">
+            {{ scope.row[item.name] }}
+          </span>
+        </template>
+      </el-table-column>
+
+      <!-- 处理其他类型的列 -->
+      <el-table-column
+        v-else
+        :prop="item.name"
+        :label="item.label"
+        :width="item.width"
+        :align="item.align ? item.align : 'center'"
+        :fixed="item.fixed"
+      >
+        <template #default="scope">
+          <span>{{ scope.row[item.name] === null ? 'null' : scope.row[item.name] }}</span>
+        </template>
+      </el-table-column>
+    </template>
+  </el-table>
+</div>
+
+
       <!-- ------------分页--------------->
       <div class="pagination">
         <el-pagination
           v-model:currentPage="currentPage1"
-          :page-sizes="[10, 20, 30, 40, 50, 100]"
+          :page-sizes="[20, 30, 40, 50, 100]"
+          :page-size="pageSize"
           background
           layout="total, sizes, prev, pager, next, jumper"
-          :total="data.length"
+          :total="props.data.length"
           @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
         />
@@ -91,32 +166,96 @@
   </div>
 </template>
 <script lang="ts" setup>
+  import  axios  from 'axios';
   import { computed, ref } from 'vue'
   import { Search } from '@element-plus/icons-vue'
   import { ElMessage, ElMessageBox } from 'element-plus'
   import type { FormInstance } from 'element-plus'
   const ruleFormRef = ref<FormInstance>()
-  const emit = defineEmits(['reset', 'onSubmit', 'selection-change'])
+  const emit = defineEmits(['files-uploaded','search','reset', 'onSubmit', 'selection-change', 'upload', 'triggerFileInput','handleSelectChange', 'handleCellClick','backOff'])
+  const selectedValue = ref(null)
+  const emitSearch = () => {
+  emit('search', { contractName: contractName.value, contractVersion: contractVersion.value });
+};
   let props = defineProps({
     columns: {
       type: Array<any>,
       default: () => [],
     },
+    nodes:{
+      type: Array<any>,
+      default: () => [],
+    }
+    ,
     data: {
       type: Array<any>,
       default: () => [],
+    },
+    nodeCount:{
+      type: Number,
+      default: 0,
     },
     loading: {
       type: Boolean,
       default: false,
     },
+    showButton:{
+      type: Boolean,
+      default: false,
+    },
+    showSuperVersion:{
+      type: Boolean,
+      default: false,
+    },
+    showNums:{
+      type:Boolean,
+      default:false,
+    },
+    showInput:{
+      type:Boolean,
+      default:false,
+    },
+    back:{
+      type:Boolean,
+      default:false,
+    }
   })
 
+  const selectedFiles = ref([]);
+  const contractName = ref('');
+  const contractVersion = ref('');
+  const fileInput = ref(null)
   const currentPage1 = ref(1)
   // 收缩展开
   const isExpand = ref(false)
   // 每页显示几个数据
-  const pageSize = ref(10)
+  const pageSize = ref(20)
+  const uploadedFiles = ref([]);
+  const showFileDialog = ref(false);
+
+  const handleCellClick = (column, value, row) => {
+    console.log('Clicked column in child:', column);
+    if (column === 'id' || column === 'sessionId') {
+        emit('handleCellClick', column, value, row);
+    }
+}
+
+
+
+
+const refreshPage = () =>{
+  window.location.reload();
+}
+const backOff = () =>{
+  // console.log('callback')
+  emit('backOff')
+}
+const cancelFiles = () => {
+    selectedFiles.value = [];
+    fileInput.value.value = ''; // 清空文件输入的值
+};
+
+
   const handleSizeChange = (val: number) => {
     console.log(`${val} items per page`)
     pageSize.value = val
@@ -153,11 +292,44 @@
   }
   const formSearchData = ref(search)
   const formInline = reactive(obj)
+  const handleSelectChange = (newValue) =>{
+    console.log('Child component: selected value changed to:', newValue);
+    emit('handleSelectChange',newValue)
 
+  }
   const onSubmit = () => {
     console.log('submit!', formInline)
     emit('onSubmit', formInline)
   }
+  const uploadFiles = () => {
+    upload(selectedFiles.value); 
+    emit('files-uploaded', selectedFiles.value.map(file => file.name));
+    selectedFiles.value = []; 
+    fileInput.value.value = ''; // 清空文件输入的值
+};
+  const upload = (files) => {  
+  const formData = new FormData();
+  for (let i = 0; i < files.length; i++) {
+    formData.append('file', files[i]);
+  }
+  
+  axios.post('http://42.194.184.32:8080/uploadTrafficFile', formData)
+    .then(response => {
+      console.log('上传成功', response.data);
+    })
+    .catch(error => {
+      console.error('上传失败', error);
+    });
+}
+  const triggerFileInput = () => {
+    fileInput.value.click(); 
+  }
+  const handleFileChange = (event) => {
+    const files = event.target.files;
+    selectedFiles.value = Array.from(files);
+};
+
+
 
   const reset = (formEl: FormInstance | undefined) => {
     formSearchData.value.forEach((item) => {
@@ -165,21 +337,40 @@
     })
     emit('reset')
   }
-  const deleteAction = (row) => {
-    ElMessageBox.confirm('你确定要删除当前项吗?', '温馨提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-      draggable: true,
-    })
-      .then(() => {
-        list.value = list.value.filter((item) => item.id !== row.id)
-        ElMessage.success('删除成功')
-      })
-      .catch(() => {})
-  }
 </script>
 <style scoped lang="scss">
+
+.input-group-horizontal {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  position: absolute;
+  top: 9.3%; /* 根据需要调整 */
+  left: 3%; /* 根据需要调整 */
+}
+
+.input-group {
+  margin-right: 15%; /* 在输入框之间添加间隔 */
+}
+
+
+.ul-css{
+  position: relative;
+}
+.elformcss{
+  opacity: 0;
+}
+.inputsearch{
+  // display: none;
+}
+.cancelButton{
+  margin-right: 2%;
+}
+  ul{
+    margin-right: 5%;
+    position: relative;
+    top: -5px;
+  }
   .edit-input {
     padding-right: 100px;
   }

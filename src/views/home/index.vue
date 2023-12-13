@@ -105,33 +105,76 @@
               </div>
             </el-card>
           </el-col>
+          <el-col :xs="24" :sm="12" :lg="8">
+            <el-card style="margin-bottom: 10px">
+              <div class="grid-content">
+                <div class="left" style="background: #FF00FF"
+                ><el-icon style="font-size: 24px; color: white"><user /></el-icon
+                ></div>
+                <div class="right">
+                  <div
+                      class="h2"
+                      style="color: #FF00FF"
+                  ><count-to
+                      :start-val="0"
+                      :end-val="1587"
+                      :duration="2000"
+                      :autoplay="true"
+                  ></count-to
+                  ></div>
+                  <div>提醒 </div>
+                </div>
+              </div>
+            </el-card>
+          </el-col>
+          <el-col :xs="24" :sm="12" :lg="8">
+            <el-card style="margin-bottom: 10px">
+              <div class="grid-content">
+                <div class="left" style="background: #4B0082"
+                ><el-icon style="font-size: 24px; color: white"><user /></el-icon
+                ></div>
+                <div class="right">
+                  <div
+                      class="h2"
+                      style="color: #4B0082"
+                  ><count-to
+                      :start-val="0"
+                      :end-val="2324"
+                      :duration="2000"
+                      :autoplay="true"
+                  ></count-to
+                  ></div>
+                  <div>优化 </div>
+                </div>
+              </div>
+            </el-card>
+          </el-col>
         </el-row>
         <el-card class="box-card">
           <template #header>
             <div class="card-header">
-              <span>工具系列</span>
+              <span>相关单位</span>
             </div>
           </template>
           <div style="display: flex">
             <el-card
                 style="flex: 1; margin-right: 20px; cursor: pointer"
                 class="card-item"
-                @click="goTo('https://ext.dcloud.net.cn/plugin?id=7511')"
+                @click="goTo('http://www.foxkee.com/')"
             >
-              <div style="color: white; margin-bottom: 10px"><h3>SmartFast</h3></div>
+              <div style="color: white; margin-bottom: 10px"><h3>区块链及可信计算实验室</h3></div>
               <div style="font-size: 12px; color: white"
-              >uniapp 表格组件
-                支持固定表头和首列、上拉加载更多、及固定多列，表格自适应内容，排序，多选checkbox、可点击删除，编辑、合计功能，兼容多端</div
+              ></div
               >
             </el-card>
             <el-card
                 style="flex: 1; cursor: pointer"
                 class="card-item"
-                @click="goTo('https://github.com/zouzhibin/vue-admin-perfect')"
+                @click="goTo('https://hd.hainanu.edu.cn/scscs/')"
             >
-              <div style="color: white; margin-bottom: 10px"><h3>SecurityCheck</h3></div>
+              <div style="color: white; margin-bottom: 10px"><h3>海南大学密码学院</h3></div>
               <div style="font-size: 12px; color: white"
-              >系统基于vue3+vuex+ element-plus+ts后台管理系统</div
+              ></div
               >
             </el-card>
           </div>

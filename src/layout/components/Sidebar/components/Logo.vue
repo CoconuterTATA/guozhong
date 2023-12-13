@@ -6,7 +6,7 @@
       </router-link>
       <router-link v-else key="expand" class="sidebar-logo-link" to="/">
         <img src="@/assets/image/logo.png" class="sidebar-logo">
-        <h1 class="sidebar-title">Vue Admin Perfect</h1>
+        <h1 class="sidebar-title">服务舱</h1>
       </router-link>
     </transition>
   </div>
@@ -38,7 +38,7 @@ defineProps<{ isCollapse: boolean }>();
       width: 100%;
 
       & .sidebar-logo {
-        width: 32px;
+        width: 50px;
         height: 32px;
         vertical-align: middle;
 

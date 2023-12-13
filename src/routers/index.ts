@@ -7,30 +7,43 @@ interface extendRoute {
 //
 import tableRouter from './modules/table'
 import dataScreenRouter from './modules/dataScreen'
-import excelRouter from './modules/excel'
+// import excelRouter from './modules/excel'
 import nestedRouter from './modules/nested'
 import systemRouter from './modules/system'
 import echartsRouter from './modules/echarts'
-import chatRouter from './modules/chat'
+// import chatRouter from './modules/chat'
 import othersRouter from './modules/other'
 import externalLink from './modules/externalLink'
-import formRouter from './modules/form'
+// import formRouter from './modules/form'
 import functionPageRouter from './modules/functionPage'
-
+import contractCheck from './modules/smartfastCheck';
+// import dynamicCheck from './modules/dataflow';
+import dataflow from './modules/dataflow';
+import contractSecurityAnalysis from './modules/contractSecurityAnalysis';
+import contractDetector from './modules/contractdetector';
+import gasTime from './modules/gas';
+import securityProtocolAnalysis from './modules/securityProtocol';
 
 // 异步组件
 export const asyncRoutes = [
     ...dataScreenRouter,
-    ...echartsRouter,
-    ...tableRouter,
-    ...formRouter,
-    ...othersRouter,
-    ...functionPageRouter,
-    ...chatRouter,
-    ...nestedRouter,
-    ...excelRouter,
-    ...externalLink,
+    // ...echartsRouter,
+    ...contractCheck,
+    ...contractDetector,
+    ...contractSecurityAnalysis,
+    // ...checkRecords,
+    //...tableRouter,
+    // ...formRouter,
+    // ...othersRouter,
+    ...dataflow,
+    ...gasTime,
+    // ...functionPageRouter,
+    // ...chatRouter,
+    // ...nestedRouter,
+    // ...excelRouter,
+    //...externalLink,
     ...systemRouter,
+    ...securityProtocolAnalysis
 ]
 
 /**
