@@ -68,61 +68,6 @@
     dialogVisible.value = true
   }
   
-  const batchDelete = () => {
-    if (!selectObj.value.length) {
-      return ElMessage.error('未选中任何行')
-    }
-    ElMessageBox.confirm('你确定要删除选中项吗?', '温馨提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-      draggable: true,
-    })
-        .then(() => {
-          ElMessage.success('模拟删除成功')
-          list.value = list.value.concat([])
-        })
-        .catch(() => {})
-  }
-  const selectionChange = (val) => {
-    selectObj.value = val
-  }
-  
-  const edit = (row) => {
-    title.value = '编辑'
-    rowObj.value = row
-    dialogVisible.value = true
-    ruleForm.name = row.name
-    ruleForm.sex = row.sex
-    ruleForm.price = row.price
-  }
-  
-  const del = (row) => {
-    console.log('row==', row)
-    ElMessageBox.confirm('你确定要删除当前项吗?', '温馨提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-      draggable: true,
-    })
-        .then(() => {
-          list.value = list.value.filter((item) => item.id !== row.id)
-          ElMessage.success('删除成功')
-          loading.value = true
-          setTimeout(() => {
-            loading.value = false
-          }, 500)
-        })
-        .catch(() => {})
-  }
-  
-  const reset = () => {
-    loading.value = true
-    setTimeout(() => {
-      loading.value = false
-    }, 500)
-    ElMessage.success('触发重置方法')
-  }
   
   const handleCellClick = async (value, row) =>{
     console.log('Dynamic Selected value changed to:', value);
@@ -133,11 +78,9 @@
     console.log('Selected value changed to:', val);
     
     try {
-        // 使用axios调用API
-        const response = await axios.get(`http://42.194.184.32:8080/search/${val}`);
+        const response = await axios.get(`http://42.194.184.32:3000/search/${val}`);
         
         if (response.status === 200) {
-            // 使用从API返回的数据更新list
             console.log(response.data)
             list.value = response.data;
         } else {
@@ -146,26 +89,6 @@
     } catch (error) {
         console.error('Error fetching data:', error);
     }
-}
-
-  const onSubmit = (val) => {
-    console.log('val===', val);
-    ElMessage.success('触发查询方法');
-
-    // 使用筛选功能筛选表格数据
-    let filteredData = data.value.filter(item => {
-      let match = true;
-      
-      // 对每一个查询参数进行检查
-      if (val.id && Number(item.id) !== Number(val.id)) match = false;
-      if (val.solcVersion && item.solcVersion !== val.solcVersion) match = false;
-      // 如果有其他参数，继续加入筛选条件...
-
-      return match;
-    });
-
-    // 更新list，即表格的显示数据
-    list.value = filteredData;
 }
 
 
@@ -188,7 +111,7 @@
 
   onMounted(() => {
     nextTick(()=>{
-      axios.get('http://42.194.184.32:8080/active_nodes')
+      axios.get('http://42.194.184.32:3000/active_nodes')
     .then(response => {
       const data = response.data;
       list.value = data.data || [];  // 请按照你的API结构进行调整

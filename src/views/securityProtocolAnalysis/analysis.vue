@@ -57,6 +57,8 @@
   import {ref,onMounted} from "vue";
   import axios from 'axios';
 
+
+
 const protocolName = ref('');
 const codeValue = ref('');
 const errorCount = ref(0);
@@ -229,7 +231,7 @@ const openAttackImage = (figBase64) => {
   
   
   
-  <!--样式-->
+
   <style lang="scss" scoped>
      .content {
     display: flex;
@@ -239,22 +241,22 @@ const openAttackImage = (figBase64) => {
   white-space: pre-wrap;
 }
 .container {
-    display: flex; /* 设置水平布局 */
-    align-items: center; /* 垂直居中 */
+    display: flex; 
+    align-items: center; 
 }
 .error-count {
   font-weight: bold;
   color: red;
 }
 .container > * {
-    margin-right: 10px; /* 添加右边距，防止元素紧挨在一起 */
+    margin-right: 10px; 
 }
 
 .container el-input {
-    width: 0px; /* 设置输入框的宽度，可根据需要调整 */
+    width: 0px; 
 }
 
-  //顶部总样式
+
   .m-code-editor {
     width: 100%;
     height: 100%;

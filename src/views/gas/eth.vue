@@ -1,46 +1,125 @@
 <template>
     <div class="container">
-      <div class="image-loader-container">
+      <!--<div class="image-loader-container">
         <div class="loader"></div>
         <div class="icon">
-        <img :src="btc" alt="btcicon" class="btcIcon">
+        <img :src="eth" alt="ethicon" class="btcIcon">
       </div>
-      </div>
-      <el-select v-model="selected" class="rounded-select" @change="handleSelectChange">
-        <el-option label="ETH" value="ETH"></el-option>
-        <el-option label="BTC" value="BTC"></el-option>
+      </div>-->
+    <el-select v-model="selected" class="rounded-select">
+      <el-option label="ETH" value="ETH"></el-option>
+      <el-option label="BSC" value="BSC"></el-option>
     </el-select>
-      <p class="title">ETH Gas Price (sat/vB)</p>
-      <p class="subtitle">最新实时报价</p>
-      <p class="subtitle">{{ currentTime }}</p>
-      <p class="bitcoinPrice">{{ bitcoinPrice }}</p>
-      <div class="images">
-        <div class="image-container" v-for="(image, index) in imageSources" :key="index">
-          <p class="text-above">
-            <span v-if="index === 0">高速</span>
-            <span v-else-if="index === 1">标准</span>
-            <span v-else>缓慢</span>
-          </p>
-          <img :src="image" :alt="'Image ' + (index + 1)">
-          <div class="rectangle">
-            <span class="numberCss">{{ rectangleNumbers[index] }}</span>
-          </div>
-          <p class="custom-text-above">{{ customTextAbove[index] }}</p>
-          <p class="text-below">
-            <span v-if="index === 0">15 分钟</span>
-            <span v-else-if="index === 1">30 分钟</span>
-            <span v-else>45 分钟</span>
-          </p><!-- 下方文本 -->
-          <p class="custom-text-below">{{ customTextBelow[index] }}</p>
+	
+		
+	    <div v-if="selected === 'BSC'">
+			<div class="image-loader-container">
+			  <div class="loader"></div>
+			  <div class="icon">
+			  <img :src="bsc" alt="bscicon" class="btcIcon">
+			</div>
+			</div>
+			<p class="title">BSC Gas Price</p>
+		    <p class="subtitle">最新实时报价</p>
+		        <p class="subtitle">{{ currentTime }}</p>
+		        <p class="bitcoinPrice">{{ UsdPrice }}</p>
+		      <p class="blockNum">最新区块编号</p>
+		       <p class="bluetext">{{ LastBlock }}</p>
+		      
+		        <div class="images">
+		          <div class="image-container" v-for="(image, index) in imageSources" :key="index">
+		            <p class="text-above">
+		              <span v-if="index === 0">高速</span>
+		              <span v-else-if="index === 1">标准</span>
+		              <span v-else>缓慢</span>
+		            </p>
+		            <img :src="image" :alt="'Image ' + (index + 1)">
+		            <div class="rectangle">
+		              <span class="numberCss">{{ rectangleNumbers[index] }}</span>
+		            </div>
+		            <p class="custom-text-above">{{ customTextAbove[index] }}</p>
+		            <p class="text-below">
+		              <span v-if="index === 0">2 分钟</span>
+		              <span v-else-if="index === 1">5 分钟</span>
+		              <span v-else>30 分钟</span>
+		            </p><!-- 下方文本 -->
+		            <!--<p class="custom-text-below">{{ customTextBelow[index] }}</p>-->
+		          </div>
+		        </div>
+	
+		    </div>
+			
+			<!-- 根据选择框的值切换页面 -->
+			    <div v-else>
+			      <!-- 第一个页面的内容 -->
+				  <div class="image-loader-container">
+				    <div class="loader"></div>
+				    <div class="icon">
+				    <img :src="eth" alt="ethicon" class="btcIcon">
+				  </div>
+				  </div>
+			      <p class="title">ETH Gas Price (Gwei)</p>
+				    <p class="subtitle">最新实时报价</p>
+				    <p class="subtitle">{{ currentTime }}</p>
+				    <p class="bitcoinPrice">{{ UsdPrice }}</p>
+				  <p class="blockNum">最新区块编号</p>
+				   <p class="bluetext">{{ LastBlock }}</p>
+				  
+				    <div class="images">
+				      <div class="image-container" v-for="(image, index) in imageSources" :key="index">
+				        <p class="text-above">
+				          <span v-if="index === 0">高速</span>
+				          <span v-else-if="index === 1">标准</span>
+				          <span v-else>缓慢</span>
+				        </p>
+				        <img :src="image" :alt="'Image ' + (index + 1)">
+				        <div class="rectangle">
+				          <span class="numberCss">{{ rectangleNumbers[index] }}</span>
+				        </div>
+				        <p class="custom-text-above">{{ customTextAbove[index] }}</p>
+				        <p class="text-below">
+				          <span v-if="index === 0">2 分钟</span>
+				          <span v-else-if="index === 1">5 分钟</span>
+				          <span v-else>30 分钟</span>
+				        </p><!-- 下方文本 -->
+				        <!--<p class="custom-text-below">{{ customTextBelow[index] }}</p>-->
+				      </div>
+				    </div>
+				    
+				    
+				    
+				    <p class="blockNum">建议的基础费用</p>
+				    <p class="bluetext">{{suggestBaseFee}}</p>
+				    <div class="container">
+				        <div class="recentBlock">
+				  		<div class="title2">最近五个区块的gas使用率</div>
+				  		
+				  		
+				  		<div class="row" v-for="(item, index) in items" :key="index">
+				  		        <div class="col">{{ '#' + (index + 1) }}</div>
+				  		        <div class="col">{{item}}</div>
+				  		    </div>
+				          	
+				  		
+				        </div>
+				      </div>
+				    <p class="blockNum">您愿意花费gas为 (wei)：</p>
+				  		<div class="search-container">
+				  		  <input v-model="searchText" type="text" class="search-input" placeholder="搜索...">
+				  		  <button class="search-button" @click="search">搜索</button>
+				  		</div>
+				  		<p class="blockNum">您的交易确认时间预计为{{searchResult}}秒</p>
+			    </div>
+			
+		</div>
+    
 
-        </div>
-      </div>
-    </div>
   </template>
   
   <script>
   import { ElSelect, ElOption } from 'element-plus';
-  import btc from '@/assets/image/btc.png';
+  import eth from '@/assets/image/eth.png';
+  import bsc from '@/assets/image/BSC.png'
   import orangeImage from '@/assets/image/orange-gas.png';
   import blueImage from '@/assets/image/blue-gas.png';
   import greenImage from '@/assets/image/green-gas.png';
@@ -52,53 +131,65 @@
         customTextBelow: ['$123', '$123', '$123'],
         selected:'',
         currentTime: new Date().toLocaleString(),
-        bitcoinPrice: '$123456',
         imageSources: [blueImage, orangeImage, greenImage],
-        btc,
-        rectangleNumbers: [1, 2, 3],
-        gasData: {},
-      };
+        eth,
+		rectangleNumbers: [],
+		UsdPrice: '',//ETH当前美元价格
+		LastBlock: '',// 以太坊网络上最新的区块编号
+		SafeGasPrice: '',//推荐的 gas 价格，交易有很高的概率在 30 分钟内被确认
+		ProposeGasPrice: '',//推荐的 gas 价格，交易有很高的概率在 5 分钟内被确认
+		FastGasPrice: '',//推荐的 gas 价格，交易有很高的概率在 2 分钟内被确认
+		suggestBaseFee: '',//建议的基础费用
+		gasUsedRatio : '', 
+		items: [],
+		searchResult: '____',
+		bsc,
+	  };
     },
+	created() {
+		this.fetchData();
+	},
+	methods: {
+	    fetchData() {
+	      axios.get('http://42.194.184.32:8080/publicChain/getEthGasTracker')
+	        .then(response => {
+	          this.UsdPrice = response.data.UsdPrice;
+	          this.LastBlock = response.data.LastBlock;
+	          this.SafeGasPrice = response.data.SafeGasPrice;
+	          this.ProposeGasPrice = response.data.ProposeGasPrice;
+	          this.FastGasPrice = response.data.FastGasPrice;
+	          this.suggestBaseFee = response.data.suggestBaseFee;
+	          this.gasUsedRatio = response.data.gasUsedRatio;
+	
+	          this.rectangleNumbers = [
+	            parseInt(this.FastGasPrice),
+	            parseInt(this.ProposeGasPrice),
+	            parseInt(this.SafeGasPrice),
+	          ];
+	          this.items = this.gasUsedRatio.split(',').map(item => parseFloat(item));
+	        })
+	        .catch(error => {
+	          console.error('Error fetching data:', error);
+	        });
+	    },
+		search() {
+			var url = "http://42.194.184.32:8080/publicChain/estimateConfirmTime?gasPrice=" + this.searchText;
+			//axios.get('http://42.194.184.32:8080/publicChain/estimateConfirmTime',{ params: { query: this.searchText } })
+			axios.get(url)
+			  .then(response => {
+			    this.searchResult = response.data;
+			    //this.showModal = true;
+				MessageBox.alert(response.data, '搜索结果', {
+				            confirmButtonText: '关闭',
+				          });
+			})
+			.catch(error => {
+			    console.error('Error fetching data:', error);
+			});
+		}
+	},
     mounted() {
-      this.setSelectedOptionBasedOnRoute();
-      this.fetchGasData();
-    },
-    watch: {
-    '$route'(newRoute) {
-        this.setSelectedOptionBasedOnRoute();
-    }
-    },
-
-    methods:{
-    setSelectedOptionBasedOnRoute() {
-    const path = this.$route.path;
-    if (path.includes('/gasRealTime/eth')) {
-      this.selected = 'ETH';
-    } else if (path.includes('/gasRealTime/btc')) {
-      this.selected = 'BTC';
-    }
-  },
-    handleSelectChange(value) {
-      if (value === 'ETH') {
-        this.$router.push('/gasRealTime/eth');
-      } else if (value === 'BTC') {
-        this.$router.push('/gasRealTime/btc');
-      }
-    },
-      fetchGasData() {
-      axios.get('http://42.194.184.32:8080/publicChain/getBscGasTracker')
-        .then(response => {
-          this.gasData = response.data;
-          this.rectangleNumbers = [
-            response.data.FastGasPrice,
-            response.data.ProposeGasPrice,
-            response.data.SafeGasPrice
-          ];
-        })
-        .catch(error => {
-          console.error('请求BSC Gas数据出错:', error);
-        });
-    },
+      
     },
   components: {
     ElSelect,
@@ -121,6 +212,76 @@
   bottom: 2%;
   /* 可根据需要添加其他样式，如字体大小、边框等 */
 }
+.blockNum {
+  color: #353935;
+}
+.recentBlock {
+	  width: 350px; 
+	     height: 200px;
+	     background-color: white;
+	     border-radius: 40px;
+	     box-shadow: 0 0 20px rgba(0, 0, 0, 0.2); /* 增加阴影的模糊度和透明度 */
+}
+.row {
+	  display: flex;
+	      height: 16%;
+}
+.col {
+    width: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 15px;
+        font-weight: bold;
+        color: #333;
+        border-radius: 10px;
+}
+  .title2 {
+     display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 10%;
+        font-size: 15px;
+        font-weight: bold;
+        color: #333;
+        text-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        margin-bottom: 15px; /* 增加标题和下面文字的间距为20px */
+  }
+  .bluetext {
+	  color: #1E90FF;
+	  font-weight: bold;
+  }
+  
+   
+	.search-container {
+	    display: flex;
+	    align-items: center;
+	    border: 2px solid green;
+	    border-radius: 5px;
+	    padding: 5px;
+	  }
+	
+	  .search-input {
+	    border: none;
+	    padding: 5px;
+	    margin-right: 5px;
+	    outline: none;
+	    flex-grow: 1;
+	  }
+	
+	  .search-button {
+	    background-color: green;
+	    color: white;
+	    border: none;
+	    padding: 5px 10px;
+	    border-radius: 5px;
+	    cursor: pointer;
+	  }
+	
+	  .search-button:hover {
+	    background-color: darkgreen;
+	  }
+
 
   .text-above, .text-below,.custom-text-above, .custom-text-below {
   right: 5%;

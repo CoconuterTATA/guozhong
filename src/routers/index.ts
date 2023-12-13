@@ -23,6 +23,8 @@ import contractSecurityAnalysis from './modules/contractSecurityAnalysis';
 import contractDetector from './modules/contractdetector';
 import gasTime from './modules/gas';
 import securityProtocolAnalysis from './modules/securityProtocol';
+import toDetector from './modules/todetector';
+import fishingDetection from './modules/fishingdetection';
 
 // 异步组件
 export const asyncRoutes = [
@@ -31,6 +33,7 @@ export const asyncRoutes = [
     ...contractCheck,
     ...contractDetector,
     ...contractSecurityAnalysis,
+    ...toDetector,
     // ...checkRecords,
     //...tableRouter,
     // ...formRouter,
@@ -42,8 +45,9 @@ export const asyncRoutes = [
     // ...nestedRouter,
     // ...excelRouter,
     //...externalLink,
+    ...securityProtocolAnalysis,
+    ...fishingDetection,
     ...systemRouter,
-    ...securityProtocolAnalysis
 ]
 
 /**
