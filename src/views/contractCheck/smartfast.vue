@@ -175,7 +175,7 @@ let options = {
 };
 
 onMounted(() => {
-  
+
   chartInstance.value = echarts.init(chartsRef.value);
   chartInstance.value.setOption(options);
   let {addObserver} = useResizeElement(chartInstance.value, chartsRef.value);
@@ -189,7 +189,7 @@ onMounted(() => {
     formData.append('code', codeValue.value);
     formData.append('solcVersion', selectedVersion.value);
 
-    const response = await axios.post('/api/smartFast', formData);
+    const response = await axios.post('http://42.194.184.32:8080/smartFast', formData);
 
     if (response.data) {
         console.log('high:', response.data.high);
@@ -359,7 +359,7 @@ onMounted(() => {
      .editor-container{
       width: 50%;
       height: 1100px;
-      overflow-y: auto; 
+      overflow-y: auto;
     }
   //   .CodeMirror {
   // height: 100%; // 这将使 CodeMirror 填充整个 .editor-container
