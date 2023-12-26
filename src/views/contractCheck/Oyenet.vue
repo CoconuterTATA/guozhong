@@ -138,7 +138,7 @@ try {
   formData.append('code', codeValue.value);
   formData.append('solcVersion', selectedVersion.value);
 
-  const response = await axios.post('/api/oyente', formData);
+  const response = await axios.post('http://42.194.184.32:8080/oyente', formData);
 
   if (response.data) {
     callstack.value = response.data.vulnerabilities.callstack;
@@ -332,7 +332,7 @@ isLoading.value = false;  // 隐藏加载动画
   background-color: lightblue; /* 设置背景颜色 */
   color: dodgerblue; /* 设置文字颜色 */
   border-radius: 5px; /* 添加圆角效果，调整数值以控制圆角的弧度 */
-  
+
   text-align: right;
 }
 .vulnerability p{
