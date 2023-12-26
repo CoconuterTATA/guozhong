@@ -68,7 +68,7 @@ const options = {
   ],
   yAxis: [
     {
-      name: '单位/件',
+      name: '合约数量/个',
       axisTick: {
         show: false,
       },
@@ -90,7 +90,7 @@ const options = {
   ],
   series: [
     {
-      name: '咨询',
+      name: '安全',
       type: 'line',
       data: [100, 20, 30, 102, 15, 30, 20, 18],
       symbolSize: 1,
@@ -121,7 +121,7 @@ const options = {
       },
     },
     {
-      name: '求助',
+      name: '低风险',
       type: 'line',
       data: [20, 12, 11, 14, 25, 16, 10, 20],
       symbolSize: 1,
@@ -152,7 +152,7 @@ const options = {
       },
     },
     {
-      name: '无效',
+      name: '高风险',
       type: 'line',
       data: [150, 120, 170, 140, 100, 160, 110, 110],
       symbolSize: 1,
@@ -183,7 +183,7 @@ const options = {
       },
     },
     {
-      name: '投诉举报',
+      name: '中风险',
       type: 'line',
       data: [200, 80, 100, 30, 60, 50, 110, 20],
       symbolSize: 1,
