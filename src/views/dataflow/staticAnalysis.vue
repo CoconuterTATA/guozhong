@@ -1,19 +1,24 @@
 <template>
-    <div class="app-container" ref="appContainer">
-      <PropTable
-          :loading="loading"
-          @selection-change="selectionChange"
-          :columns="column"
-          :data="list"
-          :showButton=true
-          @reset="reset"
-          @onSubmit="onSubmit"
-          @files-uploaded="handleFilesUploaded"
-      >
-      </PropTable>
+  <div class="app-container" ref="appContainer">
+    <!-- Loading圆圈 -->
+    <div v-if="loading" class="loading-overlay">
+      <div class="loading-spinner"></div>
+    </div>
+    <!-- PropTable 组件 -->
+    <PropTable
+      :loading="loading"
+      @selection-change="selectionChange"
+      :columns="column"
+      :data="list"
+      :showButton=true
+      @reset="reset"
+      @onSubmit="onSubmit"
+      @files-uploaded="handleFilesUploaded"
+    >
+    </PropTable>
   </div>
-  
-  </template>
+</template>
+
   <script lang="ts" setup name="comprehensive">
   import axios from 'axios';
   import {ref, reactive, onMounted, nextTick} from 'vue'
@@ -32,18 +37,21 @@
   
 
   const handleFilesUploaded = (fileNames) => {
+    loading.value = true; 
     setTimeout(() => {
-        fetchData(fileNames);
+      fetchData(fileNames);
     }, 3000); 
-    };
-  const fetchData = async (fileNames) => {
-      try {
-        const response = await axios.get('http://42.194.184.32:8080/trafficDetect');
-        list.value = response.data;
-      } catch (error) {
-        console.error('获取数据失败:', error);
-      }
-    };
+};
+const fetchData = async (fileNames) => {
+    try {
+      const response = await axios.get('http://42.194.184.32:8080/trafficDetect');
+      list.value = response.data;
+    } catch (error) {
+      console.error('获取数据失败:', error);
+    } finally {
+      loading.value = false; 
+    }
+};
   
   const getHeight = ()=>{
   
@@ -63,20 +71,6 @@
 
   onMounted(() => {
     nextTick(()=>{
-      // let data = appContainer.value.
-       // 在nextTick中获取数据，以确保在视图更新后执行
-      //  axios.get('http://42.194.184.32:8080/trafficDetect')
-      //     .then(response => {
-      //       data.value = response.data;
-      //       loading.value = false; // 数据加载完成后隐藏加载动画
-      //       // console.log(data.value)
-      //       console.log('获取到的数据:', response.data);
-      //       list.value = response.data;
-      //     })
-      //     .catch(error => {
-      //       console.error('获取数据失败', error);
-      //       loading.value = false; // 处理错误情况，也隐藏加载动画
-      //     });
     })
     setTimeout(() => {
       loading.value = false
@@ -85,6 +79,33 @@
   </script>
   
   <style scoped>
+
+  
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .loading-spinner {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #3498db;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 2s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
   .edit-input {
     padding-right: 100px;
   }

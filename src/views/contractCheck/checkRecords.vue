@@ -36,32 +36,7 @@
   const contractName = ref('');
   const contractVersion = ref('');
   // const loading = ref(true);
-  const dialogVisible = ref(false)
-  const title = ref('新增')
-  const rowObj = ref({})
-  const selectObj = ref([])
 
-
-
-  const onSubmit = (val) => {
-    console.log('val===', val);
-    ElMessage.success('触发查询方法');
-
-    // 使用筛选功能筛选表格数据
-    let filteredData = data.value.filter(item => {
-      let match = true;
-
-      // 对每一个查询参数进行检查
-      if (val.id && Number(item.id) !== Number(val.id)) match = false;
-      if (val.solcVersion && item.solcVersion !== val.solcVersion) match = false;
-      // 如果有其他参数，继续加入筛选条件...
-
-      return match;
-    });
-
-    // 更新list，即表格的显示数据
-    list.value = filteredData;
-}
 const handleSearch = ({ contractName, contractVersion }) => {
   list.value = originalData.value.filter(item => {
     const matchesName = contractName ? item.contractName.includes(contractName) : true;

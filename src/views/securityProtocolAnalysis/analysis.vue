@@ -122,7 +122,7 @@ const responseData = ref({
       remark: "No attacks within bounds.",
       claimId: "wmf-Lowe,R1",
       status: true
-    },
+    },g
     {
       claimDetails: "Nisynch",
       attackNumber: 1,
