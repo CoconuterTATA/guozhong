@@ -29,7 +29,7 @@
         <h3>钓鱼账户检测</h3>
       </section>
 	  
-	  
+	  <div v-if="isPhishingAccount === '1'">
 	  <p>Address:</p>
 	  <div class="red-box">警告！！！该地址疑似被用于钓鱼诈骗，请谨慎与该地址进行交互</div>
 	  
@@ -55,11 +55,20 @@
 		  
 	  </div>
 	  
-	  <p>Address:</p>
+	  
+	  <div v-else>
+	  <p>Address:     {{tokenAddress}}</p>
 	  <div class="green-box">该用户为正常用户</div>
 	  
-	  <div class="white-box">Overview</div>
-	  <div class="white-box">More info</div>
+	  <div class="white-box">Overview
+		<p>ETH BALANCE     {{Balance}} ETH</p>
+	  
+	  </div>
+	  <div class="white-box">More info
+		<p>上一个交易    {{transactions[1].FromAddress}} </p>
+		<p>第一个交易    {{transactions[0].FromAddress}} </p>
+	  
+	  </div>
 	  		<table>
 	  		      <tr>
 	  		        <td>交易HASH</td>
@@ -69,14 +78,20 @@
 	  		        <td>Value</td>
 	  		      </tr>
 	  			  
-	  			   <tr v-for="row in 3" :key="row">
-	  			    <td></td>
-	  			    <td></td>
-	  			    <td></td>
-	  			    <td></td>
-	  			    <td></td>
+	  			   <!--<tr v-for="row in 3" :key="row">-->
+				   <tr v-for="(transaction, index) in transactions" :key="index">
+	  			    <td>{{ transaction.TransactionHash }}</td>
+	  			    <td>{{ transaction.BlockNumber }}</td>
+	  			    <td>{{ transaction.FromAddress }}</td>
+	  			    <td>{{ transaction.ToAddress }}</td>
+	  			    <td>{{ transaction.Value }}</td>
 	  				</tr>
+				
+					
 	  		</table>
+		</div>
+		
+	</div>
 	  		  
 	  
       
@@ -90,6 +105,7 @@
 
 <script>
 import imageUrl from '@/assets/image/phishing.png';
+import axios from 'axios';
 export default {
   data() {
     return {
@@ -101,8 +117,14 @@ export default {
     activeTab: 'result',
     isLoading: false,
 	isPhishingAccount: '',
+	address: '',
+	Balance:'',
+	transactions: [],
     };
   },
+  /*created() {
+  	this.fetchData();
+  },*/
   methods: {
     clearInput() {
       this.tokenAddress = '';
@@ -117,6 +139,21 @@ export default {
       // 在这里执行数据请求或其他需要的操作
     }, 2000); // 延迟2秒
       console.log('查询操作：', this.tokenAddress);
+	  
+	  
+	  var url = "http://42.194.184.32:8080/transactionAudit?address=" + this.tokenAddress;
+	    axios.get(url)
+	     .then(response => {
+	      this.address = response.data.address;
+	      this.isPhishingAccount = response.data.isPhishingAccount;
+		  this.Balance = response.data.Balance;
+		  this.transactions = response.data.transactions;
+	  	console.log('已查询：', this.tokenAddress);
+	      
+	  })
+	  .catch(error => {
+	      console.error('Error fetching data:', error);
+	  });
     },
     checkInput() {
       // 检查输入
@@ -124,23 +161,19 @@ export default {
     closeModal() {
     this.isModalOpen = false; // 关闭模态框
 	},
-	fetchData() {
-		var url = "http://42.194.184.32:8080/transactionAudit?address=" + this.searchText;
+	/*fetchData() {
+		var url = "http://42.194.184.32:8080/transactionAudit?address=" + this.tokenAddress;
 		  axios.get(url)
 		   .then(response => {
-		    this.searchResult = response.data;
-		    this.UsdPrice = response.data.UsdPrice;
-		    this.LastBlock = response.data.LastBlock;
-		    this.SafeGasPrice = response.data.SafeGasPrice;
-		    this.ProposeGasPrice = response.data.ProposeGasPrice;
-		    this.FastGasPrice = response.data.FastGasPrice;
-		    this.suggestBaseFee = response.data.suggestBaseFee;
-		    this.gasUsedRatio = response.data.gasUsedRatio;
+		    this.address = response.data.address;
+		    this.isPhishingAccount = response.data.isPhishingAccount;
+			console.log('已查询：', this.tokenAddress);
+		    
 		})
 		.catch(error => {
 		    console.error('Error fetching data:', error);
 		});
-	}
+	}*/
 	
 	}
 };
@@ -278,6 +311,8 @@ hr {
   align-items: center;
   justify-content: center;
   z-index: 100;
+  overflow-x:auto;
+  overflow-y:auto;
 }
 
 .modal {
@@ -433,8 +468,8 @@ hr {
 
 
 .white-box {
-  width: 100px;
-  height: 50px;
+  width: 300px;
+  height: 90px;
   background-color: white;
   border: 1px solid #ccc;
   border-radius: 10px;

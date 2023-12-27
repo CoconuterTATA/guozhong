@@ -23,6 +23,8 @@
 		    <p class="subtitle">最新实时报价</p>
 		        <p class="subtitle">{{ currentTime }}</p>
 		        <p class="bitcoinPrice">{{ UsdPrice }}</p>
+				
+				
 		      <p class="blockNum">最新区块编号</p>
 		       <p class="bluetext">{{ LastBlock }}</p>
 		      
@@ -62,6 +64,12 @@
 				    <p class="subtitle">最新实时报价</p>
 				    <p class="subtitle">{{ currentTime }}</p>
 				    <p class="bitcoinPrice">{{ UsdPrice }}</p>
+					
+					<div class="loading" v-if="isLoading==true">
+					    <!-- 加载状态元素，例如加载图标 -->
+					    <div class="loader2" ></div>
+					</div>
+					
 				  <p class="blockNum">最新区块编号</p>
 				   <p class="bluetext">{{ LastBlock }}</p>
 				  
@@ -144,10 +152,13 @@
 		items: [],
 		searchResult: '____',
 		bsc,
+		isLoading: true
+
 	  };
     },
 	created() {
 		this.fetchData();
+		
 	},
 	methods: {
 	    fetchData() {
@@ -186,10 +197,13 @@
 			.catch(error => {
 			    console.error('Error fetching data:', error);
 			});
-		}
+		},
+		
 	},
     mounted() {
-      
+		setTimeout(() => {
+		      this.isLoading = false;
+		    }, 2500);
     },
   components: {
     ElSelect,
@@ -378,5 +392,28 @@
 .rectangle span {
   font-size: 40px;
   font-weight: bold;
+}
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed; /* 使用 fixed 定位使其相对于视口居中 */
+  top: 0%;
+  left: 0%;
+  width: 100vw; /* 视口宽度 */
+  height: 100vh; /* 视口高度 */
+  background-color: rgba(255, 255, 255, 0.5); /* 可选：半透明背景 */
+  z-index: 1000; /* 确保加载图标在其他内容之上 */
+}
+
+.loader2 {
+  border: 5px solid #f3f3f3; /* 浅灰色边框 */
+  border-top: 5px solid #3498db; /* 蓝色边框 */
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 2s linear infinite;
+  position: relative;
+  left: 5%;
 }
 </style>
