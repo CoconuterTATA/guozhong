@@ -30,7 +30,6 @@
   const loading = ref(true)
   const appContainer = ref(null)
   import PropTable from '@/components/Table/PropTable/index.vue'
-  // const data = []
   const data = ref([]);
   const list = ref(data)
 
@@ -51,6 +50,7 @@
   const goBack = () => {
   console.log('goback')
   list.value = originalList.value;
+  column.value = [];  // 清空现有的列定义
   column.value = [
     { name: 'id', label: 'ID', inSearch: true, valueType: 'input', width: 100 },
     { name: 'trafficFileName', label: '流量文件名', inSearch: true, valueType: 'input', width: 180 },
@@ -59,6 +59,7 @@
     { name: 'path', label: '存储路径', inSearch: true, valueType: 'input' },
   ];
 };
+
 
   const edit = (row) => {
     title.value = '编辑'
@@ -135,29 +136,43 @@
 
   ])
 
-  const handleCellClick = async (column, value, row) => {
-    console.log("Received column:", column);
-    console.log("Received value:", value);
-    console.log("Received row:", row);
+  const handleCellClick = async (columnName, value, row) => {
+  console.log("Received column:", columnName);
+  if (columnName === 'sessionId') {
+    fetchDetailsBySessionId(value);
+  } else if (columnName === 'id') {
+    fetchListBySessionId(value);
+  }
+};
 
-    if (column === 'sessionId') {
-        fetchDetailsBySessionId(value);
-    } else if (column === 'id') {
-        fetchListBySessionId(value);
-    }
-}
 
 
 const fetchDetailsBySessionId = (sessionId) => {
   // 更新表结构为会话详情
   column.value = [
-    // ... 你的会话详情结构
+    { name: 'packetId', label: '数据包ID',inSearch: true, valueType: 'input' ,width: 100 },
+    { name: 'timestamp', label: '时间戳', inSearch: true, valueType: 'input' ,width: 180 },
+    { name: 'packetLength', label: '数据包长度', inSearch: true, valueType: 'input' ,width: 120 },
+    { name: 'ethernetHeaderSize', label: '以太网头部大小', inSearch: true, valueType: 'input' ,width: 150 },
+    { name: 'dstMacAddr', label: '目标MAC地址',inSearch: true, valueType: 'input' , width: 150 },
+    { name: 'srcMacAddr', label: '源MAC地址',inSearch: true, valueType: 'input' , width: 150 },
+    { name: 'type', label: '类型',inSearch: true, valueType: 'input' , width: 100 },
+    { name: 'ipVersion', label: 'IP版本',inSearch: true, valueType: 'input' , width: 100 },
+    { name: 'dstIpAddr', label: '目标IP地址',inSearch: true, valueType: 'input' , width: 150 },
+    { name: 'srcIpAddr', label: '源IP地址',inSearch: true, valueType: 'input' , width: 150 },
+    { name: 'protocol', label: '协议',inSearch: true, valueType: 'input' , width: 100 },
+    { name: 'ttl', label: 'TTL',inSearch: true, valueType: 'input' , width: 100 },
+    { name: 'ipv4HeaderSize', label: 'IPv4头部大小', inSearch: true, valueType: 'input' ,width: 150 },
+    { name: 'dstPort', label: '目标端口',inSearch: true, valueType: 'input' , width: 120 },
+    { name: 'srcPort', label: '源端口',inSearch: true, valueType: 'input' , width: 120 },
+    { name: 'sessionName', label: '会话名', inSearch: true, valueType: 'input' ,width: 150 }
   ];
+
   const params = new URLSearchParams();
   console.log(sessionId)
   params.append('session_id', sessionId);
   loading.value = true; // 开启加载动画
-  axios.post(`http://42.194.184.32:8080/pcap/listPacketsBySessionld`, params)
+  axios.post(`http://42.194.184.32:8080/pcap/listPacketsBySessionId`, params)
     .then(response => {
       console.log(response.data);
       console.log('success')
@@ -165,14 +180,14 @@ const fetchDetailsBySessionId = (sessionId) => {
       loading.value = false; // 数据加载完成后隐藏加载动画
     })
     .catch(error => {
-      console.error('根据会话Name获取详情失败', error);
+      console.error('根据会话ID获取详情失败', error);
       loading.value = false; // 处理错误情况，也隐藏加载动画
     });
 }
 
 
 const fetchListBySessionId = (para) => {
-
+column.value = [];
 column.value = [
   {name: 'sessionId', label: '会话ID', inSearch: true, valueType: 'input', width: 100},
   {name: 'sessionName', label: '会话名', inSearch: true, valueType: 'input', width: 100},
@@ -196,28 +211,22 @@ axios.post(`http://42.194.184.32:8080/pcap/listSessionByTrafficId?traffic_id=${p
   });
 }
 
-  onMounted(() => {
-    nextTick(()=>{
-      // let data = appContainer.value.
-       // 在nextTick中获取数据，以确保在视图更新后执行
-       axios.get('http://42.194.184.32:8080/pcap/listDetectRecord')
-          .then(response => {
-            data.value = response.data;
-            loading.value = false; // 数据加载完成后隐藏加载动画
-            originalList.value = response.data;
-            // console.log(data.value)
-            console.log('获取到的数据:', response.data);
-            list.value = response.data;
-          })
-          .catch(error => {
-            console.error('获取数据失败', error);
-            loading.value = false; // 处理错误情况，也隐藏加载动画
-          });
-    })
-    setTimeout(() => {
-      loading.value = false
-    }, 500)
-  })
+onMounted(() => {
+  nextTick(() => {
+    axios.get('http://42.194.184.32:8080/pcap/listDetectRecord')
+      .then(response => {
+        data.value = response.data;
+        originalList.value = response.data;
+        list.value = response.data;
+        loading.value = false;
+      })
+      .catch(error => {
+        console.error('获取数据失败', error);
+        loading.value = false;
+      });
+  });
+});
+
   </script>
 
   <style scoped>

@@ -130,6 +130,23 @@ class="cancelButton"
           </span>
         </template>
       </el-table-column>
+      
+      <el-table-column
+    v-if="item.name === 'sessionId'"
+    :prop="item.name"
+    :label="item.label"
+    :width="item.width"
+    :align="item.align ? item.align : 'center'"
+    :fixed="item.fixed"
+  >
+    <template #default="scope">
+      <span 
+        @click="handleCellClick(item.name, scope.row[item.name], scope.row)"
+        style="font-weight: bold; color: green; cursor: pointer;">
+        {{ scope.row[item.name] }}
+      </span>
+    </template>
+  </el-table-column>
 
       <!-- 处理其他类型的列 -->
       <el-table-column
@@ -233,12 +250,19 @@ class="cancelButton"
   const uploadedFiles = ref([]);
   const showFileDialog = ref(false);
 
-  const handleCellClick = (column, value, row) => {
-    console.log('Clicked column in child:', column);
-    if (column === 'id' || column === 'sessionId') {
-        emit('handleCellClick', column, value, row);
+  const handleCellClick = (columnName, value, row) => {
+    console.log("Clicked column:", columnName);
+    console.log("Clicked value:", value);
+    console.log("Clicked row:", row);
+
+    if (columnName === 'id') {
+        // ID列的点击处理
+        emit('handleCellClick', columnName, value, row);
+    } else if (columnName === 'sessionId') {
+        // SessionID列的点击处理
+        emit('handleCellClick', columnName, value, row);
     }
-}
+  }
 
 
 
