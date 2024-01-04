@@ -104,7 +104,7 @@ const fetchDetailsBySessionId = (sessionId) => {
   column.value = [];
   column.value = [
     { name: 'packetId', label: '数据包ID',inSearch: true, valueType: 'input' ,width: 100 },
-    { name: 'timestamp', label: '时间戳', inSearch: true, valueType: 'input' ,width: 180 },
+    { name: 'timestamp', label: '时间戳', inSearch: true, valueType: 'input' ,width: 250 },
     { name: 'packetLength', label: '数据包长度', inSearch: true, valueType: 'input' ,width: 120 },
     { name: 'ethernetHeaderSize', label: '以太网头部大小', inSearch: true, valueType: 'input' ,width: 150 },
     { name: 'dstMacAddr', label: '目标MAC地址',inSearch: true, valueType: 'input' , width: 150 },
@@ -118,7 +118,7 @@ const fetchDetailsBySessionId = (sessionId) => {
     { name: 'ipv4HeaderSize', label: 'IPv4头部大小', inSearch: true, valueType: 'input' ,width: 150 },
     { name: 'dstPort', label: '目标端口',inSearch: true, valueType: 'input' , width: 120 },
     { name: 'srcPort', label: '源端口',inSearch: true, valueType: 'input' , width: 120 },
-    { name: 'sessionName', label: '会话名', inSearch: true, valueType: 'input' ,width: 150 }
+    { name: 'sessionName', label: '会话名', inSearch: true, valueType: 'input' ,width: 280 }
   ];
 
   const params = new URLSearchParams();
@@ -143,7 +143,7 @@ const fetchListBySessionId = (para) => {
 column.value = [];
 column.value = [
   {name: 'sessionId', label: '会话ID', inSearch: true, valueType: 'input', width: 100},
-  {name: 'sessionName', label: '会话名', inSearch: true, valueType: 'input', width: 100},
+  {name: 'sessionName', label: '会话名', inSearch: true, valueType: 'input', width: 120},
   {name: 'sourceIp', label: '源IP', inSearch: true, valueType: 'input', width: 400},
   { name: 'destinationIp', label: '目标IP', inSearch: true, valueType: 'input', width:180 },
   { name: 'destinationPort', label: '目标端口', sorter: true, inSearch: true, valueType: 'input', width: 180 },
