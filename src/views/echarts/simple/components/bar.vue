@@ -2,9 +2,10 @@
   <div :id="id" :class="className" :style="{ height: height, width: width }" />
 </template>
 <script lang="ts" setup>
-  import * as echarts from 'echarts'
-  import { EChartsType } from 'echarts/core'
-  import { onMounted } from 'vue'
+  import axios from 'axios';
+  import * as echarts from 'echarts';
+  import { EChartsType } from 'echarts/core';
+  import { onMounted, ref } from 'vue';
 
   let props = defineProps({
     className: {
@@ -56,8 +57,31 @@
     chart.setOption(options)
     return chart
   }
+  const fetchChartData = async () => {
+    try {
+      const response = await axios.get('http://42.194.184.32:8080/smartfast/getRecent7dayContracts');
+      updateChartData(response.data);
+    } catch (error) {
+      console.error('获取数据失败', error);
+    }
+  };
+
+  const updateChartData = (data) => {
+    const dates = Object.keys(data).sort();
+    const counts = dates.map(date => data[date]);
+
+    chart.setOption({
+      xAxis: {
+        data: dates
+      },
+      series: [{
+        data: counts
+      }]
+    });
+  };
   onMounted(() => {
     chart = initChart()
+    fetchChartData();
     window.addEventListener('resize', function () {
       chart && chart.resize()
     })

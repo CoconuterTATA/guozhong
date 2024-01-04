@@ -51,7 +51,7 @@
                       style="color: #2d8cf0"
                   ><count-to
                       :start-val="0"
-                      :end-val="5268"
+                      :end-val=vulnerabilityInfo.low
                       :duration="2000"
                       :autoplay="true"
                   ></count-to
@@ -73,7 +73,7 @@
                       style="color: #64d572"
                   ><count-to
                       :start-val="0"
-                      :end-val="9599"
+                      :end-val=vulnerabilityInfo.medium
                       :duration="2000"
                       :autoplay="true"
                   ></count-to
@@ -95,7 +95,7 @@
                       style="color: #f25e43"
                   ><count-to
                       :start-val="0"
-                      :end-val="595453"
+                      :end-val=vulnerabilityInfo.high
                       :duration="2000"
                       :autoplay="true"
                   ></count-to
@@ -117,7 +117,7 @@
                       style="color: #FF00FF"
                   ><count-to
                       :start-val="0"
-                      :end-val="1587"
+                      :end-val=vulnerabilityInfo.warning
                       :duration="2000"
                       :autoplay="true"
                   ></count-to
@@ -139,7 +139,7 @@
                       style="color: #4B0082"
                   ><count-to
                       :start-val="0"
-                      :end-val="2324"
+                      :end-val=vulnerabilityInfo.opt
                       :duration="2000"
                       :autoplay="true"
                   ></count-to
@@ -182,7 +182,7 @@
         <el-card class="box-card">
           <template #header>
             <div class="card-header">
-              <span>本周合约检测量</span>
+              <span>近七日合约检测量</span>
             </div>
           </template>
           <div>
@@ -195,13 +195,33 @@
 </template>
 <script setup lang="ts">
   import { User } from '@element-plus/icons-vue'
-  import { ref } from 'vue'
+  import axios from 'axios'
+  import { onMounted, ref } from 'vue'
   import AvatarLogo from '@/assets/image/avatar.png'
   import weLogo from '@/assets/image/we.png'
   import CountTo from '@/components/CountTo/index.vue'
   import BarCharts from '@/views/echarts/simple/components/bar.vue'
+  const vulnerabilityInfo = ref({
+    high: 0,
+    medium: 0,
+    low: 0,
+    warning: 0,
+    opt: 0
+  });
   
+  const fetchVulnerabilityInfo = async () => {
+    try {
+      const response = await axios.get('http://42.194.184.32:8080/smartfast/getVulnerabilityInfo');
+      vulnerabilityInfo.value = response.data;
+    } catch (error) {
+      console.error('获取漏洞信息失败', error);
+    }
+  };
 
+  // 组件挂载时调用
+  onMounted(() => {
+    fetchVulnerabilityInfo();
+  });
   const goTo = (url) => {
     window.open(url, '_blank')
   }
