@@ -14,9 +14,11 @@
       <span class="searchIcon" @click="executeSearch">&#x1F50D;</span>
     </div>
   </div>
-  <div class="loading" v-if="isLoading">
-      <!-- 加载状态元素，例如加载图标 -->
+  <!--<div class="loading" v-if="isLoading">
       <div class="loader"></div>
+  </div>-->
+  <div class="loading-overlay" v-if="isLoading==true">
+  	<div class="loading-spinner"></div>
   </div>
   <div v-if="isModalOpen" class="modal-overlay">
   <div class="modal">
@@ -316,8 +318,8 @@ hr {
 }
 
 .modal {
-  width: 600px; /* 固定宽度 */
-  height: 100%; /* 固定高度 */
+  width: 900px; /* 固定宽度 */
+  height: 95%; /* 固定高度 */
   overflow: auto; /* 启用滚动条 */
   background-color: white;
   padding: 20px;
@@ -468,8 +470,8 @@ hr {
 
 
 .white-box {
-  width: 300px;
-  height: 90px;
+  width: 400px;
+  height: 140px;
   background-color: white;
   border: 1px solid #ccc;
   border-radius: 10px;
@@ -511,5 +513,25 @@ td {
   text-align: center;
 }
 
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .loading-spinner {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #3498db;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 2s linear infinite;
+  }
 
 </style>

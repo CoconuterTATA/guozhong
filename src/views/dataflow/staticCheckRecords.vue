@@ -33,19 +33,7 @@
   const data = ref([]);
   const list = ref(data)
 
-  const formSize = ref('default')
-  const ruleFormRef = ref<FormInstance>()
-  const ruleForm = reactive({
-    name: '',
-    sex: null,
-    price: null,
-  })
-
   const originalList = ref([]);  // 用于保存原始列表的状态
-  const dialogVisible = ref(false)
-  const title = ref('新增')
-  const rowObj = ref({})
-  const selectObj = ref([])
  
   const goBack = () => {
   console.log('goback')
@@ -61,34 +49,6 @@
 };
 
 
-  const edit = (row) => {
-    title.value = '编辑'
-    rowObj.value = row
-    dialogVisible.value = true
-    ruleForm.name = row.name
-    ruleForm.sex = row.sex
-    ruleForm.price = row.price
-  }
-
-  const del = (row) => {
-    console.log('row==', row)
-    ElMessageBox.confirm('你确定要删除当前项吗?', '温馨提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
-      type: 'warning',
-      draggable: true,
-    })
-        .then(() => {
-          list.value = list.value.filter((item) => item.id !== row.id)
-          ElMessage.success('删除成功')
-          loading.value = true
-          setTimeout(() => {
-            loading.value = false
-          }, 500)
-        })
-        .catch(() => {})
-  }
-
   const reset = () => {
     loading.value = true
     setTimeout(() => {
@@ -100,11 +60,9 @@
   const onSubmit = (val) => {
     console.log('val===', val);
     ElMessage.success('触发查询方法');
-
     // 使用筛选功能筛选表格数据
     let filteredData = data.value.filter(item => {
       let match = true;
-
       // 对每一个查询参数进行检查
       if (val.id && Number(item.id) !== Number(val.id)) match = false;
       if (val.solcVersion && item.solcVersion !== val.solcVersion) match = false;
@@ -112,11 +70,6 @@
 
       return match;
     });
-
-
-
-
-
     // 更新list，即表格的显示数据
     list.value = filteredData;
 }
@@ -128,12 +81,11 @@
   }
   const column = ref([
     // { type: 'selection', width: 60 ,fixed: 'left'},
-    {name: 'id', label: 'ID', inSearch: true, valueType: 'input', width: 100},
+    {name: 'id', label: 'ID', inSearch: true,sorter: true,valueType: 'input', width: 100},
     { name: 'trafficFileName', label: '流量文件名', inSearch: true, valueType: 'input', width:180 },
     { name: 'createdTime', label: '创建时间', sorter: true, inSearch: true, valueType: 'input', width: 180 },
     { name: 'sessionNum', label: '会话数量', sorter: true, inSearch: true, valueType: 'input', width: 120 },
     { name: 'path', label: '存储路径', inSearch: true, valueType: 'input' ,},
-
   ])
 
   const handleCellClick = async (columnName, value, row) => {
@@ -149,6 +101,7 @@
 
 const fetchDetailsBySessionId = (sessionId) => {
   // 更新表结构为会话详情
+  column.value = [];
   column.value = [
     { name: 'packetId', label: '数据包ID',inSearch: true, valueType: 'input' ,width: 100 },
     { name: 'timestamp', label: '时间戳', inSearch: true, valueType: 'input' ,width: 180 },
@@ -219,6 +172,7 @@ onMounted(() => {
         originalList.value = response.data;
         list.value = response.data;
         loading.value = false;
+        console.log(column.value)
       })
       .catch(error => {
         console.error('获取数据失败', error);

@@ -22,11 +22,11 @@
 			<p class="title">BSC Gas Price</p>
 		    <p class="subtitle">最新实时报价</p>
 		        <p class="subtitle">{{ currentTime }}</p>
-		        <p class="bitcoinPrice">{{ UsdPrice }}</p>
+		        <p class="bitcoinPrice">{{ BscPrice }}</p>
 				
 				
 		      <p class="blockNum">最新区块编号</p>
-		       <p class="bluetext">{{ LastBlock }}</p>
+		       <p class="bluetext">{{ LastBlock2 }}</p>
 		      
 		        <div class="images">
 		          <div class="image-container" v-for="(image, index) in imageSources" :key="index">
@@ -37,7 +37,7 @@
 		            </p>
 		            <img :src="image" :alt="'Image ' + (index + 1)">
 		            <div class="rectangle">
-		              <span class="numberCss">{{ rectangleNumbers[index] }}</span>
+		              <span class="numberCss">{{ rectangleNumbers2[index] }}</span>
 		            </div>
 		            <p class="custom-text-above">{{ customTextAbove[index] }}</p>
 		            <p class="text-below">
@@ -65,10 +65,10 @@
 				    <p class="subtitle">{{ currentTime }}</p>
 				    <p class="bitcoinPrice">{{ UsdPrice }}</p>
 					
-					<div class="loading" v-if="isLoading==true">
+					<!--<div class="loading" v-if="isLoading==true">-->
 					    <!-- 加载状态元素，例如加载图标 -->
-					    <div class="loader2" ></div>
-					</div>
+					    <!--<div class="loader2" ></div>
+					</div>-->
 					
 				  <p class="blockNum">最新区块编号</p>
 				   <p class="bluetext">{{ LastBlock }}</p>
@@ -116,6 +116,11 @@
 				  		  <input v-model="searchText" type="text" class="search-input" placeholder="搜索...">
 				  		  <button class="search-button" @click="search">搜索</button>
 				  		</div>
+						<div class="loading-overlay" v-if="isLoading==true">
+						    <!--
+						    <div class="loader2" ></div>-->
+							<div class="loading-spinner"></div>
+						</div>
 				  		<p class="blockNum">您的交易确认时间预计为{{searchResult}}秒</p>
 			    </div>
 			
@@ -152,12 +157,22 @@
 		items: [],
 		searchResult: '____',
 		bsc,
-		isLoading: true
+		isLoading: false,
+		
+		
+		rectangleNumbers2: [],
+		BscPrice: '',//
+		LastBlock2: '',// 
+		SafeGasPrice2: '',//
+		ProposeGasPrice2: '',//
+		FastGasPrice2: '',//
+		
 
 	  };
     },
 	created() {
 		this.fetchData();
+		this.fetchData2();
 		
 	},
 	methods: {
@@ -183,12 +198,46 @@
 	          console.error('Error fetching data:', error);
 	        });
 	    },
+		
+		fetchData2() {
+		  axios.get('http://42.194.184.32:8080/publicChain/getBscGasTracker')
+		    .then(response => {
+		      this.BscPrice = response.data.UsdPrice;
+		      this.LastBlock2 = response.data.LastBlock;
+		      this.SafeGasPrice2 = response.data.SafeGasPrice;
+		      this.ProposeGasPrice2 = response.data.ProposeGasPrice;
+		      this.FastGasPrice2 = response.data.FastGasPrice;
+			
+		      this.rectangleNumbers2 = [
+		        parseInt(this.FastGasPrice2),
+		        parseInt(this.ProposeGasPrice2),
+		        parseInt(this.SafeGasPrice2),
+		      ];
+		      //this.items = this.gasUsedRatio.split(',').map(item => parseFloat(item));
+		    })
+		    .catch(error => {
+		      console.error('Error fetching data:', error);
+		    });
+		},
+		
 		search() {
 			var url = "http://42.194.184.32:8080/publicChain/estimateConfirmTime?gasPrice=" + this.searchText;
 			//axios.get('http://42.194.184.32:8080/publicChain/estimateConfirmTime',{ params: { query: this.searchText } })
+			this.isLoading = true; // 立即显示加载图标
+			this.isModalOpen = false; // 确保模态框最初不显示
+			
+			setTimeout(() => {
+			  this.isLoading = false; // 2秒后隐藏加载图标
+			  this.isModalOpen = true; // 然后显示模态框
+			  // 在这里执行数据请求或其他需要的操作
+			}, 2000); // 延迟2秒
+			  console.log('查询操作：', this.tokenAddress);
 			axios.get(url)
 			  .then(response => {
 			    this.searchResult = response.data;
+				setTimeout(() => {
+				      this.isLoading = false;
+				    }, 2500);
 			    //this.showModal = true;
 				MessageBox.alert(response.data, '搜索结果', {
 				            confirmButtonText: '关闭',
@@ -201,9 +250,9 @@
 		
 	},
     mounted() {
-		setTimeout(() => {
+		/*setTimeout(() => {
 		      this.isLoading = false;
-		    }, 2500);
+		    }, 2500);*/
     },
   components: {
     ElSelect,
@@ -416,4 +465,25 @@
   position: relative;
   left: 5%;
 }
+
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .loading-spinner {
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #3498db;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 2s linear infinite;
+  }
 </style>

@@ -2,7 +2,7 @@
     <div class="m-code-editor">
       <div class="header">
         <el-card>
-          <div class="container">
+          <div class="analysiscontainer">
             <span><b>安全协议分析台</b></span>
             <el-input placeholder="请输入协议名" v-model="protocolName" style="margin-left: auto; width: 500px;"></el-input>
             <el-button @click="startDetection">开始检测</el-button>
@@ -18,15 +18,15 @@
       </div>
     </div>
       <el-dialog title="" v-model="dialogVisible" :style="{ width: '80%' }">
-        <div>
+        <div class="detection-result">
           <h3>检测结果</h3>
           <p>协议名：{{ responseData.protocol }}</p>
           <p>errorcount：<span class="error-count">{{ responseData.errorCount }}</span></p>
           <p class="text-pre-wrap">verification result：{{ responseData.summary }}</p>
         </div>
-        <div>
+        <div class="claim-section">
           <h3>Claim</h3>
-          <el-table :data="responseData.claims" style="width: 100%">
+          <el-table :data="responseData.claims" style="width: 100%" :span-method="mergeProtocolCells">
   <el-table-column prop="protocolName" label="Protocol" width="180"></el-table-column>
   <el-table-column prop="role" label="Role" width="100"></el-table-column>
   <el-table-column prop="claimDetails" label="Claim Details"></el-table-column>
@@ -155,6 +155,23 @@ const responseData = ref({
 
 
 
+const mergeProtocolCells = ({ row, column, rowIndex }) => {
+  if (column.property === 'protocolName') {
+    if (rowIndex > 0 && responseData.value.claims[rowIndex].protocolName === responseData.value.claims[rowIndex - 1].protocolName) {
+      return [0, 0];
+    }
+    let rowspan = 1;
+    for (let i = rowIndex + 1; i < responseData.value.claims.length; i++) {
+      if (responseData.value.claims[i].protocolName === row.protocolName) {
+        rowspan++;
+      } else {
+        break;
+      }
+    }
+    return [rowspan, 1];
+  }
+  return [1, 1]; 
+};
 
 
 const startDetection = async () => {
@@ -233,14 +250,24 @@ const openAttackImage = (figBase64) => {
   
 
   <style lang="scss" scoped>
-     .content {
+
+.detection-result, .claim-section {
+  border: 1px solid lightblue;
+  padding: 10px;
+  margin-bottom: 10px;
+}
+.detection-result {
+  margin-bottom: 20px; 
+}
+
+.content {
     display: flex;
     flex-grow: 1;
   }
-  .text-pre-wrap {
+.text-pre-wrap {
   white-space: pre-wrap;
 }
-.container {
+.analysiscontainer {
     display: flex; 
     align-items: center; 
 }
@@ -248,13 +275,11 @@ const openAttackImage = (figBase64) => {
   font-weight: bold;
   color: red;
 }
-.container > * {
+.analysiscontainer > * {
     margin-right: 10px; 
 }
 
-.container el-input {
-    width: 0px; 
-}
+
 
 
   .m-code-editor {

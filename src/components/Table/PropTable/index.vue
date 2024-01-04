@@ -132,7 +132,7 @@ class="cancelButton"
       </el-table-column>
       
       <el-table-column
-    v-if="item.name === 'sessionId'"
+    v-else-if="item.name === 'sessionId'"
     :prop="item.name"
     :label="item.label"
     :width="item.width"
