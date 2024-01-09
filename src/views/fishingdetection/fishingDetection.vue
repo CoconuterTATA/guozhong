@@ -7,7 +7,7 @@
       <input 
         type="text" 
         v-model="tokenAddress"
-        placeholder="请输入要分析的Token地址"
+        placeholder="待检测账户"
         @input="checkInput"
       >
       <span class="clearIcon" v-if="tokenAddress" @click="clearInput">&#x2715;</span>
@@ -32,52 +32,84 @@
       </section>
 	  
 	  <div v-if="isPhishingAccount === '1'">
-	  <p>Address:</p>
-	  <div class="red-box">警告！！！该地址疑似被用于钓鱼诈骗，请谨慎与该地址进行交互</div>
-	  
-	  <div class="white-box">Overview</div>
-	  <div class="white-box">More info</div>
+	  <p>
+	  		<span class="large-text">Address：  </span> 
+	  		<span>{{tokenAddress}}</span>
+	  </p>
+	  <hr>
+	  <div class="red-box">
+	  		  <span class="centered-box-red">警告！！！该地址疑似被用于钓鱼诈骗，请谨慎与该地址进行交互</span>
+	  </div>
+	  <div style="display: flex; gap: 60px;">
+	  		<div class="white-box">
+	  			<p class="large-text">Overview</p>
+	  			<p>ETH BALANCE     </p>
+	  			<p class="bold-text">{{Balance}} ETH</p>
+	  		</div>
+	  		<div class="white-box">
+	  			<p>
+	  			<span class="large-text">More info</span> 
+	  			<p>上一个交易  </p>  
+	  			<span class="bold-text">{{transactions[1].FromAddress}}</span>
+	  			<p>第一个交易  </p> 
+	  			<span class="bold-text">{{transactions[0].FromAddress}}</span>
+	  			</p>
+			</div>
+	  </div>
 		<table>
 		      <tr>
-		        <td>交易HASH</td>
-		        <td>区块号</td>
-		        <td>From</td>
-		        <td>To</td>
-		        <td>Value</td>
+		        <td class="bold-text">交易HASH</td>
+		        <td class="bold-text">区块号</td>
+		        <td class="bold-text">From</td>
+		        <td class="bold-text">To</td>
+		        <td class="bold-text">Value</td>
 		      </tr>
 			  
-			   <tr v-for="row in 3" :key="row">
-			    <td></td>
-			    <td></td>
-			    <td></td>
-			    <td></td>
-			    <td></td>
-				</tr>
+			   <tr v-for="(transaction, index) in transactions" :key="index">
+			    <td>{{ transaction.TransactionHash }}</td>
+			    <td>{{ transaction.BlockNumber }}</td>
+			    <td>{{ transaction.FromAddress }}</td>
+			    <td>{{ transaction.ToAddress }}</td>
+			    <td>{{ transaction.Value }}</td>
+			   	</tr>
 		</table>
 		  
 	  </div>
 	  
 	  
 	  <div v-else>
-	  <p>Address:     {{tokenAddress}}</p>
-	  <div class="green-box">该用户为正常用户</div>
-	  
-	  <div class="white-box">Overview
-		<p>ETH BALANCE     {{Balance}} ETH</p>
-	  
+	  <p>
+		<span class="large-text">Address：  </span> 
+		<span>{{tokenAddress}}</span>
+	  </p>
+	  <hr>
+	  <div class="green-box">
+		  <span class="centered-box-green">该用户为正常用户</span>
 	  </div>
-	  <div class="white-box">More info
-		<p>上一个交易    {{transactions[1].FromAddress}} </p>
-		<p>第一个交易    {{transactions[0].FromAddress}} </p>
 	  
+	  <div style="display: flex; gap: 60px;">
+		<div class="white-box">
+			<p class="large-text">Overview</p>
+			<p>ETH BALANCE     </p>
+			<p class="bold-text">{{Balance}} ETH</p>
+		</div>
+		<div class="white-box">
+			<p>
+			<span class="large-text">More info</span> 
+			<p>上一个交易  </p>  
+			<span class="bold-text">{{transactions[1].FromAddress}}</span>
+			<p>第一个交易  </p> 
+			<span class="bold-text">{{transactions[0].FromAddress}}</span>
+			</p>
+	  </div>
 	  </div>
 	  		<table>
 	  		      <tr>
-	  		        <td>交易HASH</td>
-	  		        <td>区块号</td>
-	  		        <td>From</td>
-	  		        <td>To</td>
-	  		        <td>Value</td>
+	  		        <td class="bold-text">交易HASH</td>
+	  		        <td class="bold-text">区块号</td>
+	  		        <td class="bold-text">From</td>
+	  		        <td class="bold-text">To</td>
+	  		        <td class="bold-text">Value</td>
 	  		      </tr>
 	  			  
 	  			   <!--<tr v-for="row in 3" :key="row">-->
@@ -163,19 +195,6 @@ export default {
     closeModal() {
     this.isModalOpen = false; // 关闭模态框
 	},
-	/*fetchData() {
-		var url = "http://42.194.184.32:8080/transactionAudit?address=" + this.tokenAddress;
-		  axios.get(url)
-		   .then(response => {
-		    this.address = response.data.address;
-		    this.isPhishingAccount = response.data.isPhishingAccount;
-			console.log('已查询：', this.tokenAddress);
-		    
-		})
-		.catch(error => {
-		    console.error('Error fetching data:', error);
-		});
-	}*/
 	
 	}
 };
@@ -319,7 +338,8 @@ hr {
 
 .modal {
   width: 900px; /* 固定宽度 */
-  height: 95%; /* 固定高度 */
+  height: 85%; /* 固定高度 */
+  /*height: 600px;*/
   overflow: auto; /* 启用滚动条 */
   background-color: white;
   padding: 20px;
@@ -451,18 +471,19 @@ hr {
 }
 
 .red-box {
-  width: 600px;
+  width: 900px;
   height: 40px;
-  background-color: #FF6A6A;
+  background-color: #f7cbcc;
   border-radius: 10px;
   margin-bottom: 10px;
   text-align: center;
 }
 
 .green-box {
-  width: 600px;
+  width: 900px;
   height: 40px;
-  background-color: #54FF9F;
+  /*background-color: #54FF9F;*/
+  background-color: #98FB98;
   border-radius: 10px;
   margin-bottom: 10px;
   text-align: center;
@@ -471,7 +492,7 @@ hr {
 
 .white-box {
   width: 400px;
-  height: 140px;
+  height: 180px;
   background-color: white;
   border: 1px solid #ccc;
   border-radius: 10px;
@@ -533,5 +554,28 @@ td {
     height: 50px;
     animation: spin 2s linear infinite;
   }
-
+  .bold-text{
+	 font-weight: bold;  
+  }
+  .large-text{
+	  font-weight: bold;
+	  font-size: 19px;
+  }
+  .centered-box-green {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: 		#006400; /* 设置文本颜色为白色 */
+		border-top: 100px;
+		height: 40px;
+      }
+  .centered-box-red {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: 		#ca0504; /* 设置文本颜色为白色 */
+  		border-top: 100px;
+  		height: 40px;
+      }
+  
 </style>
