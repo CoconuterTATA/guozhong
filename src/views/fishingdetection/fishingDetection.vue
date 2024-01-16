@@ -143,7 +143,7 @@ export default {
       console.log('查询操作：', this.tokenAddress);
 	  
 	  
-	  var url = "http://42.194.184.32:8080/transactionAudit?address=" + this.tokenAddress;
+	  var url = "http://172.26.208.47:8080/transactionAudit?address=" + this.tokenAddress;
 	    axios.get(url)
 	     .then(response => {
 	      this.address = response.data.address;

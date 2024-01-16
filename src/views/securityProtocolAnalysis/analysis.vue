@@ -179,7 +179,7 @@ const startDetection = async () => {
     const formData = new FormData();
     formData.append('protocolName', protocolName.value);
     formData.append('protocolCode', codeValue.value); 
-    const response = await axios.post('http://42.194.184.32:8080/protocolAnalysis', formData, {
+    const response = await axios.post('http://172.26.208.47:8080/protocolAnalysis', formData, {
       headers: {
         'Content-Type': 'multipart/form-data' 
       }

@@ -78,7 +78,7 @@
     console.log('Selected value changed to:', val);
     
     try {
-        const response = await axios.get(`http://42.194.184.32:3000/search/${val}`);
+        const response = await axios.get(`http://172.26.208.47:3000/search/${val}`);
         
         if (response.status === 200) {
             console.log(response.data)
@@ -111,7 +111,7 @@
 
   onMounted(() => {
     nextTick(()=>{
-      axios.get('http://42.194.184.32:3000/active_nodes')
+      axios.get('http://172.26.208.47:3000/active_nodes')
     .then(response => {
       const data = response.data;
       list.value = data.data || [];  // 请按照你的API结构进行调整

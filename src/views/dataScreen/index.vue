@@ -157,13 +157,13 @@ const methods = {
   },
   // 刷新所有值的方法
   refreshValues() {
-    methods.getAuditNum('http://42.194.184.32:8080/smartfast/getAuditNum', 'smartFastAuditNum');
-    methods.getAuditNum('http://42.194.184.32:8080/oyente/getAuditNum', 'oyenteAuditNum');
-    methods.getAuditNum('http://42.194.184.32:8080/toDetector/getAuditNum', 'toDetectorAuditNum');
-    methods.getAuditNum('http://42.194.184.32:8080/pcap/getAuditNum', 'trafficDetectAuditNum');
-    methods.getAuditNum('http://42.194.184.32:8080/pcap/getSessionMaxID', 'pcapSession');
-    methods.getAuditNum('http://42.194.184.32:8080/pcap/getPacketMaxID', 'pcapPacket');
-    methods.getAuditNum('http://42.194.184.32:8080/smartfast/getVulnerabilitySum', 'vulnerabilitySum');
+    methods.getAuditNum('http://172.26.208.47:8080/smartfast/getAuditNum', 'smartFastAuditNum');
+    methods.getAuditNum('http://172.26.208.47:8080/oyente/getAuditNum', 'oyenteAuditNum');
+    methods.getAuditNum('http://172.26.208.47:8080/toDetector/getAuditNum', 'toDetectorAuditNum');
+    methods.getAuditNum('http://172.26.208.47:8080/pcap/getAuditNum', 'trafficDetectAuditNum');
+    methods.getAuditNum('http://172.26.208.47:8080/pcap/getSessionMaxID', 'pcapSession');
+    methods.getAuditNum('http://172.26.208.47:8080/pcap/getPacketMaxID', 'pcapPacket');
+    methods.getAuditNum('http://172.26.208.47:8080/smartfast/getVulnerabilitySum', 'vulnerabilitySum');
   },
 };
 // 在组件挂载后执行的逻辑

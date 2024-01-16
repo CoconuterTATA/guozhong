@@ -44,7 +44,7 @@
 };
 const fetchData = async (fileNames) => {
     try {
-      const response = await axios.get('http://42.194.184.32:8080/trafficDetect');
+      const response = await axios.get('http://172.26.208.47:8080/trafficDetect');
       list.value = response.data;
     } catch (error) {
       console.error('获取数据失败:', error);

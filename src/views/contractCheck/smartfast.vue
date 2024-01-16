@@ -68,7 +68,7 @@
     '0.4.22', '0.4.21', '0.4.20', '0.4.19', '0.4.18', '0.4.17', '0.4.16', '0.4.15', '0.4.14',
     '0.4.13', '0.4.12', '0.4.11', '0.4.10', '0.4.9', '0.4.8', '0.4.7', '0.4.5', '0.4.4', '0.4.3',
     '0.4.2', '0.4.1', '0.4.0']; // 示例Solidity版本列表
-  const downloadLink = "http://42.194.184.32:8080/download"; // 初始化为空
+  const downloadLink = "http://172.26.208.47:8080/download"; // 初始化为空
   const downloadLinkText = ref('检测结果下载链接');
 
   const chartsRef = ref<HTMLElement | null>()
@@ -189,7 +189,7 @@ onMounted(() => {
     formData.append('code', codeValue.value);
     formData.append('solcVersion', selectedVersion.value);
 
-    const response = await axios.post('http://42.194.184.32:8080/smartFast', formData);
+    const response = await axios.post('http://172.26.208.47:8080/smartFast', formData);
 
     if (response.data) {
         console.log('high:', response.data.high);

@@ -125,7 +125,7 @@ const fetchDetailsBySessionId = (sessionId) => {
   console.log(sessionId)
   params.append('session_id', sessionId);
   loading.value = true; // 开启加载动画
-  axios.post(`http://42.194.184.32:8080/pcap/listPacketsBySessionId`, params)
+  axios.post(`http://172.26.208.47:8080/pcap/listPacketsBySessionId`, params)
     .then(response => {
       console.log(response.data);
       console.log('success')
@@ -151,7 +151,7 @@ column.value = [
   { name: 'protocol', label: '协议', inSearch: true, valueType: 'input' ,},
 ]
 loading.value = true; // 开启加载动画
-axios.post(`http://42.194.184.32:8080/pcap/listSessionByTrafficId?traffic_id=${para}`)
+axios.post(`http://172.26.208.47:8080/pcap/listSessionByTrafficId?traffic_id=${para}`)
   .then(response => {
     console.log('根据Id获取session数据成功');
     console.log(response.data);
@@ -166,7 +166,7 @@ axios.post(`http://42.194.184.32:8080/pcap/listSessionByTrafficId?traffic_id=${p
 
 onMounted(() => {
   nextTick(() => {
-    axios.get('http://42.194.184.32:8080/pcap/listDetectRecord')
+    axios.get('http://172.26.208.47:8080/pcap/listDetectRecord')
       .then(response => {
         data.value = response.data;
         originalList.value = response.data;

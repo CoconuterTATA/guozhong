@@ -71,27 +71,27 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
       // 代理跨域（模拟示例）
       proxy: {
         "/api": {
-          target: "http://42.194.184.32:8080",  // 设置为您的后端服务器地址
+          target: "http://172.26.208.47:8080",  // 设置为您的后端服务器地址
           changeOrigin: true,
           rewrite: path => path.replace(/^\/api/, "")
         },
         "/download":{
-          target: "http://42.194.184.32:8080",
+          target: "http://172.26.208.47:8080",
           changeOrigin: true,
           secure: false // 这个设置允许代理到无HTTPS的服务器
         },
         "/active_nodes": {
-          target: "http://42.194.184.32:8080",  // 设置为您的后端服务器地址
+          target: "http://172.26.208.47:8080",  // 设置为您的后端服务器地址
           changeOrigin: true,
           // rewrite: path => path.replace(/^\/api/, "")
         },
         "/search": {
-          target: "http://42.194.184.32:8080",  // 设置为您的后端服务器地址
+          target: "http://172.26.208.47:8080",  // 设置为您的后端服务器地址
           changeOrigin: true,
           rewrite: path => path.replace(/^\/serach/, "")
         },
         "/pcap/listPacketsBySessionld": {
-          target: "http://42.194.184.32:8080",  // 设置为您的后端服务器地址
+          target: "http://172.26.208.47:8080",  // 设置为您的后端服务器地址
           changeOrigin: true,
           rewrite: path => path.replace(/^\/serach/, "")
         },

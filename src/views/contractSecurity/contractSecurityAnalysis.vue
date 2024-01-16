@@ -186,8 +186,8 @@ export default {
     executeSearch() {
       this.isLoading = true;
       const url = this.selectedOption === 'ETH'
-        ? 'http://42.194.184.32:8080/smartFast/EthAudit'
-        : 'http://42.194.184.32:8080/smartFast/BscAudit';
+        ? 'http://172.26.208.47:8080/smartFast/EthAudit'
+        : 'http://172.26.208.47:8080/smartFast/BscAudit';
       console.log(this.tokenAddress)
       const params = new URLSearchParams();
       params.append('address', this.tokenAddress);
