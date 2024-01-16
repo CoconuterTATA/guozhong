@@ -105,7 +105,7 @@ onMounted(() => {
     chart && chart.resize()
   })
   // 使用axios请求接口获取数据
-  axios.get('http://42.194.184.32:8080/smartfast/getRecent7dayContracts')
+  axios.get('http://172.26.208.47:8080/smartfast/getRecent7dayContracts')
       .then((res) => {
     // 将返回的数据转换为数组格式
       const data = res.data

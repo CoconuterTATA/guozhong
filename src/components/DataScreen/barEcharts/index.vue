@@ -17,7 +17,7 @@ const color = ['#ff0000', '#f39c12', '#27ae60', '#9b59b6', '#3498db'];
 const fetchData = async () => {
   try {
     // 从接口获取数据
-    const response = await axios.get('http://42.194.184.32:8080/smartfast/getVulnerabilityInfo');
+    const response = await axios.get('http://172.26.208.47:8080/smartfast/getVulnerabilityInfo');
     const data = response.data;
     // 更新图表
     updateChart(data);

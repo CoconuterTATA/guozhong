@@ -337,7 +337,7 @@ const cancelFiles = () => {
     formData.append('file', files[i]);
   }
   
-  axios.post('http://42.194.184.32:8080/uploadTrafficFile', formData)
+  axios.post('http://172.26.208.47:8080/uploadTrafficFile', formData)
     .then(response => {
       console.log('上传成功', response.data);
     })

@@ -244,7 +244,7 @@
     const data = ref([]);
       // let data = appContainer.value.
        // 在nextTick中获取数据，以确保在视图更新后执行
-       axios.get('http://42.194.184.32:8080/record')
+       axios.get('http://172.26.208.47:8080/record')
           .then(response => {
             data.value = response.data;
             loading.value = false; // 数据加载完成后隐藏加载动画

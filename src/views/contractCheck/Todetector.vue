@@ -138,7 +138,7 @@ try {
   formData.append('code', codeValue.value);
   formData.append('solcVersion', selectedVersion.value);
 
-  const response = await axios.post('http://42.194.184.32:8080/toDetector', formData);
+  const response = await axios.post('http://172.26.208.47:8080/toDetector', formData);
 
   if (response.data) {
     callstack.value = response.data.vulnerabilities.callstack;

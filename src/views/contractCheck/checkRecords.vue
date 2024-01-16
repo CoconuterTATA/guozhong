@@ -60,7 +60,7 @@ const handleSearch = ({ contractName, contractVersion }) => {
 
   onMounted(async () => {
   try {
-    const response = await axios.get('http://42.194.184.32:8080/record/listAuditRecord');
+    const response = await axios.get('http://172.26.208.47:8080/record/listAuditRecord');
     data.value = response.data;
     originalData.value = response.data;
     list.value = response.data;

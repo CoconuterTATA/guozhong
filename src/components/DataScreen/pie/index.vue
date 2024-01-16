@@ -69,7 +69,7 @@ let chart: EChartsType
 
 const fetchData = async () => {
   try {
-    const response = await axios.get("http://42.194.184.32:8080/smartfast/getVersionCounts");
+    const response = await axios.get("http://172.26.208.47:8080/smartfast/getVersionCounts");
     const  data = await response.data;
     updateChart(data);
   } catch (e) {

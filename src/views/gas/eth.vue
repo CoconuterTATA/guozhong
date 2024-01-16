@@ -177,7 +177,7 @@
 	},
 	methods: {
 	    fetchData() {
-	      axios.get('http://42.194.184.32:8080/publicChain/getEthGasTracker')
+	      axios.get('http://172.26.208.47:8080/publicChain/getEthGasTracker')
 	        .then(response => {
 	          this.UsdPrice = response.data.UsdPrice;
 	          this.LastBlock = response.data.LastBlock;
@@ -200,7 +200,7 @@
 	    },
 		
 		fetchData2() {
-		  axios.get('http://42.194.184.32:8080/publicChain/getBscGasTracker')
+		  axios.get('http://172.26.208.47:8080/publicChain/getBscGasTracker')
 		    .then(response => {
 		      this.BscPrice = response.data.UsdPrice;
 		      this.LastBlock2 = response.data.LastBlock;
@@ -221,8 +221,8 @@
 		},
 		
 		search() {
-			var url = "http://42.194.184.32:8080/publicChain/estimateConfirmTime?gasPrice=" + this.searchText;
-			//axios.get('http://42.194.184.32:8080/publicChain/estimateConfirmTime',{ params: { query: this.searchText } })
+			var url = "http://172.26.208.47:8080/publicChain/estimateConfirmTime?gasPrice=" + this.searchText;
+			//axios.get('http://172.26.208.47:8080/publicChain/estimateConfirmTime',{ params: { query: this.searchText } })
 			this.isLoading = true; // 立即显示加载图标
 			this.isModalOpen = false; // 确保模态框最初不显示
 			

@@ -149,7 +149,7 @@
     nextTick(()=>{
       // let data = appContainer.value.
        // 在nextTick中获取数据，以确保在视图更新后执行
-       axios.get('http://42.194.184.32:8080/oyente/record')
+       axios.get('http://172.26.208.47:8080/oyente/record')
           .then(response => {
             data.value = response.data.map(item => {
             let newItem = {...item};

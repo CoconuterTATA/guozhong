@@ -95,7 +95,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
           changeOrigin: true,
           rewrite: path => path.replace(/^\/serach/, "")
         },
-        //http://42.194.184.32:8080/pcap/listPacketsBySessionld
+        //http://172.26.208.47:8080/pcap/listPacketsBySessionld
         
       }
       
